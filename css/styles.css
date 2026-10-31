@@ -385,12 +385,12 @@ body {
   transition: width 0.3s ease;
 }
 
-/* Moldura do Player de Áudio do YouTube (Estilo Vinil / Cassete) */
+/* Moldura do Player de Áudio do YouTube */
 .media-visualizer-card {
   position: relative;
   width: 100%;
-  height: 140px;
-  background: linear-gradient(135deg, #1c1d2d 0%, #11121d 100%);
+  height: 160px;
+  background: #000;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
   display: flex;
@@ -401,18 +401,18 @@ body {
   margin-bottom: 10px;
 }
 
-/* O iframe do YouTube fica tecnicamente visível na tela em conformidade com os ToS da Google */
+/* O iframe do YouTube fica visível e interativo para garantir reprodução em celulares */
 .yt-hidden-player {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
-  opacity: 0.22;
-  pointer-events: none;
+  opacity: 1;
+  pointer-events: auto;
+  border: none;
 }
 
 .vinyl-disc {
+  display: none; /* Deixa o clipe do YouTube em destaque */
+}
   width: 72px;
   height: 72px;
   border-radius: 50%;
