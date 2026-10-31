@@ -1,7 +1,24 @@
-﻿/**
+/**
  * Catálogo Oficial SoundQuiz Brasil (Previews de Estúdio 100% Sem Anúncios)
  */
 const TRACKS_CATALOG = [
+    {
+        "id": "rock_cassia",
+        "title": "Malandragem",
+        "artist": "Cássia Eller",
+        "genre": "Rock Nacional",
+        "audioUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/77/8b/45/778b45b9-9a4b-fe3c-686b-f2788c15cfda/mzaf_11597985920336874604.plus.aac.p.m4a",
+        "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/03/49/74/0349747d-fcbc-bbfa-b500-1d898ee31495/00731452296426.rgb.jpg/600x600bb.jpg",
+        "alternativeTitles": ["O Segundo Sol", "Palavras Ao Vento", "Por Enquanto"],
+        "alternativeArtists": ["Rita Lee", "Elis Regina", "Pitty"],
+        "lyricsGap": {
+            "verseSnippet": "Quem sabe ainda sou uma...",
+            "correctWord": "garotinha",
+            "alternativeWords": ["menina", "mulher", "criança"],
+            "startSeconds": 0,
+            "cutSeconds": 5.4
+        }
+    },
     {
         "artist":  "Raul Seixas",
         "genre":  "Rock Nacional",
