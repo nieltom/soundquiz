@@ -215,6 +215,45 @@ class SoundQuizApp {
     document.getElementById("btn-close-custom").addEventListener("click", () => this.closeModal("modal-custom-youtube"));
     document.getElementById("btn-save-custom-track").addEventListener("click", () => this.handleSaveCustomTrack());
 
+    // Modal Premium (Login YouTube)
+    const btnOpenPremium = document.getElementById("btn-open-premium");
+    if (btnOpenPremium) {
+      btnOpenPremium.addEventListener("click", () => this.openModal("modal-premium"));
+    }
+    const btnClosePremium = document.getElementById("btn-close-premium");
+    if (btnClosePremium) {
+      btnClosePremium.addEventListener("click", () => this.closeModal("modal-premium"));
+    }
+    const btnLoginGoogle = document.getElementById("btn-login-google");
+    if (btnLoginGoogle) {
+      btnLoginGoogle.addEventListener("click", () => {
+        window.open("https://accounts.google.com/ServiceLogin?service=youtube&continue=https://www.youtube.com", "_blank");
+      });
+    }
+    const btnActivatePremium = document.getElementById("btn-activate-premium");
+    if (btnActivatePremium) {
+      btnActivatePremium.addEventListener("click", () => {
+        const profile = gameEngine.getProfile();
+        profile.isPremium = true;
+        gameEngine.saveProfile(profile);
+        this.updateProfileUI();
+        this.closeModal("modal-premium");
+        alert("👑 Modo Premium ativado! Se você já fez login no YouTube neste navegador, os vídeos agora tocarão sem anúncios.");
+      });
+    }
+
+    // Botão Pular Anúncio (Force Skip / Seek to startSeconds)
+    const skipAdBtn = document.getElementById("btn-skip-ad");
+    if (skipAdBtn) {
+      skipAdBtn.addEventListener("click", () => {
+        if (this.currentChallenge && this.currentChallenge.track) {
+          ytAudioPlayer.skipAd(this.currentChallenge.track.startSeconds);
+          skipAdBtn.textContent = "⏩ Pulando...";
+          setTimeout(() => { skipAdBtn.textContent = "⏩ Pular Anúncio"; }, 1000);
+        }
+      });
+    }
+
     // Botão de Desmutar Áudio na tela de jogo
     const unmuteBtn = document.getElementById("btn-unmute-game");
     if (unmuteBtn) {
@@ -351,6 +390,14 @@ class SoundQuizApp {
     document.getElementById("badge-eliminate").textContent = profile.powerUps.ELIMINATE_TWO;
     document.getElementById("badge-freeze").textContent = profile.powerUps.FREEZE_OPPONENT;
     document.getElementById("badge-hint").textContent = profile.powerUps.LYRICS_HINT;
+
+    // Selo Premium
+    const btnPrem = document.getElementById("btn-open-premium");
+    if (btnPrem && profile.isPremium) {
+      btnPrem.textContent = "👑 PREMIUM";
+      btnPrem.style.background = "#10b981";
+      btnPrem.style.color = "#fff";
+    }
 
     if (profile.highContrast) {
       document.body.classList.add("high-contrast");
