@@ -11,31 +11,37 @@ class GameEngine {
   }
 
   /**
-   * Gera as rodadas da partida baseado no gênero e modo selecionados
+   * Gera as rodadas da partida de forma 100% aleatória e dinâmica
    */
   generateRounds(genre = "Todos os Gêneros", totalRounds = 7) {
     // 1. Filtrar músicas pelo gênero selecionado
     let availableTracks = TRACKS_CATALOG;
     if (genre !== "Todos os Gêneros") {
-      availableTracks = TRACKS_CATALOG.filter(t => t.genre === genre);
-      if (availableTracks.length < totalRounds) {
-        availableTracks = TRACKS_CATALOG; // fallback
+      const filtered = TRACKS_CATALOG.filter(t => t.genre === genre);
+      if (filtered.length >= totalRounds) {
+        availableTracks = filtered;
       }
     }
 
-    // Embaralha as faixas
-    const shuffledTracks = [...availableTracks].sort(() => Math.random() - 0.5);
-    const selectedTracks = shuffledTracks.slice(0, Math.min(totalRounds, shuffledTracks.length));
+    // 2. Embaralhamento completo e imparcial (Fisher-Yates Shuffle)
+    const pool = [...availableTracks];
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
 
-    // Desafios disponíveis
+    // 3. Seleciona as faixas não repetidas para a partida
+    const selectedTracks = pool.slice(0, Math.min(totalRounds, pool.length));
+
+    // Tipos de desafios disponíveis sorteados aleatoriamente
     const challengeTypes = ["GUESS_TITLE", "GUESS_ARTIST", "COMPLETE_LYRICS"];
 
     return selectedTracks.map((track, index) => {
-      // Alterna os tipos de desafio para dinamismo
-      const challengeType = challengeTypes[index % challengeTypes.length];
+      // Sorteia aleatoriamente o tipo de desafio da rodada
+      const randomChallengeType = challengeTypes[Math.floor(Math.random() * challengeTypes.length)];
       const isBonusRound = (index === totalRounds - 1);
 
-      return this.buildChallenge(track, challengeType, index + 1, isBonusRound);
+      return this.buildChallenge(track, randomChallengeType, index + 1, isBonusRound);
     });
   }
 
