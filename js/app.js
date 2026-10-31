@@ -277,11 +277,6 @@ class SoundQuizApp {
     document.getElementById("btn-close-settings").addEventListener("click", () => this.closeModal("modal-settings"));
     document.getElementById("btn-close-join").addEventListener("click", () => this.closeModal("modal-join-code"));
 
-    // Modal Custom YouTube
-    document.getElementById("btn-custom-playlist").addEventListener("click", () => this.openModal("modal-custom-youtube"));
-    document.getElementById("btn-close-custom").addEventListener("click", () => this.closeModal("modal-custom-youtube"));
-    document.getElementById("btn-save-custom-track").addEventListener("click", () => this.handleSaveCustomTrack());
-
     // Edição de Perfil (Nome e Avatar)
     document.getElementById("profile-pill").addEventListener("click", () => this.openProfileEditModal());
     document.getElementById("btn-close-profile").addEventListener("click", () => this.closeModal("modal-profile-edit"));
@@ -353,71 +348,6 @@ class SoundQuizApp {
 
   closeModal(modalId) {
     document.getElementById(modalId).classList.remove("active");
-  }
-
-  handleSaveCustomTrack() {
-    const inputUrl = document.getElementById("custom-yt-url").value.trim();
-    const title = document.getElementById("custom-yt-title").value.trim() || "Música Custom";
-    const artist = document.getElementById("custom-yt-artist").value.trim() || "Artista YouTube";
-    const startSec = parseInt(document.getElementById("custom-yt-start").value) || 30;
-    const endSec = parseInt(document.getElementById("custom-yt-end").value) || (startSec + 13);
-
-    if (!inputUrl) {
-      alert("Por favor, informe a URL ou o ID do vídeo do YouTube!");
-      return;
-    }
-
-    // Extrai o ID de 11 caracteres
-    const ytRegex = /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/;
-    const match = inputUrl.match(ytRegex);
-    const videoId = match ? match[1] : inputUrl;
-
-    if (videoId.length !== 11) {
-      alert("ID do YouTube inválido! Deve conter exatamente 11 caracteres.");
-      return;
-    }
-
-    const newTrack = {
-      id: "custom_" + Date.now(),
-      videoId: videoId,
-      title: title,
-      artist: artist,
-      genre: "Personalizadas",
-      startSeconds: startSec,
-      endSeconds: endSec,
-      alternativeTitles: [title + " (Remix)", "Outra Canção", "Sucesso Acústico"],
-      alternativeArtists: ["Outro Cantor", "Banda Concorrente", "DJ Convidado"],
-      lyricsGap: {
-        verseSnippet: `Trecho da música "${title}" por ${artist}: ___`,
-        correctWord: title,
-        alternativeWords: ["Amor", "Saudade", "Coração"]
-      }
-    };
-
-    TRACKS_CATALOG.push(newTrack);
-
-    // Adiciona o gênero Personalizadas no dropdown caso ainda não exista
-    const selectGenre = document.getElementById("select-genre");
-    let optionExists = false;
-    for (let i = 0; i < selectGenre.options.length; i++) {
-      if (selectGenre.options[i].value === "Personalizadas") {
-        optionExists = true;
-        break;
-      }
-    }
-
-    if (!optionExists) {
-      const opt = document.createElement("option");
-      opt.value = "Personalizadas";
-      opt.textContent = "⭐ Músicas Personalizadas (" + title + ")";
-      selectGenre.appendChild(opt);
-    }
-
-    selectGenre.value = "Personalizadas";
-    this.selectedGenre = "Personalizadas";
-
-    this.closeModal("modal-custom-youtube");
-    alert(`Música "${title}" adicionada com sucesso! O gênero "Personalizadas" foi selecionado para sua próxima partida.`);
   }
 
   updateProfileUI() {
@@ -875,17 +805,6 @@ class SoundQuizApp {
           <span>${p.avatar}</span>
         </div>
         <div class="name">${p.name} ${teamBadge}</div>
-        <div class="score">${p.score}</div>
-      `;
-      bar.appendChild(slot);
-    });
-  }
-      slot.className = `player-slot ${p.hasAnswered ? "answered" : ""} ${p.isFrozen ? "frozen" : ""}`;
-      slot.innerHTML = `
-        <div class="avatar-wrapper">
-          <span>${p.avatar}</span>
-        </div>
-        <div class="name">${p.name}</div>
         <div class="score">${p.score}</div>
       `;
       bar.appendChild(slot);
