@@ -735,3 +735,62 @@ body {
   cursor: pointer;
 }
 
+/* Opções de Configuração de Partida (Modal Match Config) */
+.setup-option-btn {
+  background: var(--bg-card-hover);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px 8px;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.setup-option-btn:hover {
+  border-color: var(--accent-purple-light);
+}
+
+.setup-option-btn.active {
+  border-color: var(--accent-cyan);
+  background: rgba(6, 182, 212, 0.12);
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.25);
+}
+
+.challenge-option-btn {
+  background: var(--bg-card-hover);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.challenge-option-btn:hover {
+  background: #25273b;
+  border-color: var(--accent-purple-light);
+}
+
+.challenge-option-btn.active {
+  border-color: var(--accent-purple);
+  background: rgba(124, 58, 237, 0.18);
+  box-shadow: 0 0 10px rgba(124, 58, 237, 0.25);
+}
+
+.challenge-option-btn .check-icon {
+  font-size: 13px;
+  color: var(--accent-green);
+  font-weight: 900;
+  width: 18px;
+  text-align: center;
+}
+
