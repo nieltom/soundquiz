@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0e15">
+  <meta name="description" content="SoundQuiz Brasil - O melhor quiz musical multiplayer em tempo real com clássicos da música brasileira e integração com YouTube.">
+  <title>SoundQuiz Brasil - Quiz Musical Multiplayer</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <div id="app-container">
+
+    <!-- BARRA SUPERIOR (HEADER GLOBAL) -->
+    <header class="top-nav">
+      <div class="user-pill" id="profile-pill" style="cursor: pointer;">
+        <span class="user-avatar-small" id="header-avatar">🎸</span>
+        <span id="header-username">Jogador</span>
+        <span style="font-size: 10px; color: var(--accent-purple-light); background: #252738; padding: 2px 6px; border-radius: 8px;" id="header-rank">Bronze</span>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <div class="coins-badge">
+          <span>🪙</span>
+          <span id="header-coins">250</span>
+        </div>
+        <button id="btn-open-settings" style="background: transparent; border: none; font-size: 18px; cursor: pointer; color: var(--text-secondary);">⚙️</button>
+      </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- TELA 1: HOME / MENU PRINCIPAL              -->
+    <!-- ========================================== -->
+    <section id="screen-home" class="screen active">
+      <div class="brand-hero">
+        <h1>SOUNDQUIZ 🇧🇷</h1>
+        <p>Adivinhe a música mais rápido que seus amigos!</p>
+      </div>
+
+      <!-- Dica de Áudio HTTP vs Local -->
+      <div id="audio-notice" style="background: rgba(124, 58, 237, 0.15); border: 1px solid var(--accent-purple); border-radius: var(--radius-md); padding: 8px 12px; margin-bottom: 12px; font-size: 11px; color: var(--accent-purple-light); display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 16px;">🔊</span>
+        <span>Para o som oficial do YouTube tocar sem restrições, dê 2 cliques no <b>iniciar.bat</b>!</span>
+      </div>
+
+      <div class="genre-container">
+        <label for="select-genre">Gênero Musical</label>
+        <select id="select-genre" class="genre-select">
+          <option value="Todos os Gêneros">🔥 Todos os Gêneros (Mix Brasil)</option>
+          <option value="Rock Nacional">🎸 Rock Nacional</option>
+          <option value="Sertanejo">🤠 Sertanejo</option>
+          <option value="MPB">☕ MPB & Clássicos</option>
+          <option value="Funk / Pop">💃 Funk & Pop BR</option>
+          <option value="Trap / Rap">🎤 Trap & Rap Nacional</option>
+        </select>
+      </div>
+
+      <div class="mode-grid">
+        <div class="mode-card active" data-mode="FFA_4P">
+          <div class="icon">👥</div>
+          <h3>Todos vs Todos</h3>
+          <span>Até 4 jogadores</span>
+        </div>
+        <div class="mode-card" data-mode="DUEL_1V1">
+          <div class="icon">⚡</div>
+          <h3>Duelo 1v1</h3>
+          <span>Partida rápida</span>
+        </div>
+        <div class="mode-card" data-mode="DUO_2V2">
+          <div class="icon">🤝</div>
+          <h3>Batalha 2v2</h3>
+          <span>Disputa de duplas</span>
+        </div>
+        <div class="mode-card" data-mode="COOP_BOSS">
+          <div class="icon">👾</div>
+          <h3>Co-op Boss</h3>
+          <span>Derrote o Mestre do Som</span>
+        </div>
+      </div>
+
+      <button id="btn-quick-play" class="btn-primary">
+        <span>▶</span> JOGAR AGORA
+      </button>
+
+      <div style="display: flex; gap: 10px; margin-top: 10px;">
+        <button id="btn-create-room" class="btn-secondary" style="margin-top: 0; flex: 1;">
+          🏠 Criar Sala
+        </button>
+        <button id="btn-join-code" class="btn-secondary" style="margin-top: 0; flex: 1;">
+          🔑 Código
+        </button>
+      </div>
+
+      <div style="margin-top: auto; padding-top: 12px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 8px;">
+        <button id="btn-custom-playlist" style="background: none; border: none; color: var(--accent-cyan); font-size: 13px; font-weight: 700; cursor: pointer;">
+          🎵 Música Custom YouTube
+        </button>
+        <button id="btn-open-shop" style="background: none; border: none; color: var(--accent-gold); font-size: 13px; font-weight: 700; cursor: pointer;">
+          🛍️ Loja de Avatares
+        </button>
+        <button id="btn-toggle-contrast" style="background: none; border: none; color: var(--text-secondary); font-size: 13px; font-weight: 600; cursor: pointer;">
+          👁️ Alto Contraste
+        </button>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TELA 2: SALA DE ESPERA (LOBBY)             -->
+    <!-- ========================================== -->
+    <section id="screen-room" class="screen">
+      <div style="text-align: center; margin: 10px 0 16px 0;">
+        <span style="font-size: 12px; color: var(--text-secondary); text-transform: uppercase; font-weight: 700;">Código da Sala</span>
+        <div id="room-code-display" style="font-size: 34px; font-weight: 900; letter-spacing: 4px; color: var(--accent-cyan); margin: 4px 0;">BR42</div>
+        <button id="btn-copy-code" style="background: #252738; color: #fff; border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 8px; font-size: 11px; cursor: pointer;">
+          📋 Copiar Código
+        </button>
+      </div>
+
+      <button id="btn-share-whatsapp" style="background: #25D366; color: #000; border: none; border-radius: var(--radius-md); padding: 12px; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 16px;">
+        <span>💬</span> Convidar amigos no WhatsApp
+      </button>
+
+      <h4 style="font-size: 13px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 8px;">Jogadores na Sala (<span id="room-player-count">1</span>/4)</h4>
+      <div id="room-players-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
+        <!-- Lista de jogadores renderizada dinamicamente -->
+      </div>
+
+      <div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px;">
+        <button id="btn-start-game" class="btn-primary">
+          COMEÇAR PARTIDA 🚀
+        </button>
+        <button id="btn-leave-room" class="btn-secondary">
+          Voltar ao Menu
+        </button>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TELA 3: JOGO EM ANDAMENTO (GAMEPLAY)       -->
+    <!-- ========================================== -->
+    <section id="screen-game" class="screen">
+      <!-- Topo: Rodada e Bônus -->
+      <div class="game-header">
+        <span class="round-indicator" id="game-round-indicator">RODADA 1/7</span>
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <button id="btn-unmute-game" style="background: #252738; color: #fff; border: 1px solid var(--border-color); border-radius: 12px; padding: 4px 8px; font-size: 11px; font-weight: 700; cursor: pointer;">
+            🔊 Ativar Som
+          </button>
+          <div class="bonus-pill" id="game-bonus-pill" style="display: none;">⚡ PONTOS EM DOBRO</div>
+        </div>
+      </div>
+
+      <!-- Placar dos 4 Jogadores -->
+      <div class="players-bar" id="game-players-bar">
+        <!-- Renderizado dinamicamente -->
+      </div>
+
+      <!-- Barra do Chefe (Modo Co-op) -->
+      <div class="boss-container" id="game-boss-container">
+        <div class="boss-header">
+          <span>👾 MESTRE DO VINIL (CHEFE)</span>
+          <span id="boss-hp-text">15000 / 15000 HP</span>
+        </div>
+        <div class="boss-hp-bar">
+          <div class="boss-hp-fill" id="boss-hp-fill"></div>
+        </div>
+      </div>
+
+      <!-- Moldura do Som / YouTube Player Oficial -->
+      <div class="media-visualizer-card">
+        <!-- Iframe do YouTube oculto esteticamente mas ativo em conformidade com Google ToS -->
+        <div id="yt-audio-element" class="yt-hidden-player"></div>
+        
+        <div class="vinyl-disc" id="vinyl-disc">
+          <span>🎵</span>
+        </div>
+        <div class="soundwave-indicator" id="soundwave-status">
+          Tocando trecho musical...
+        </div>
+      </div>
+
+      <!-- Barra de Tempo -->
+      <div class="timer-wrapper">
+        <div class="timer-fill" id="game-timer-fill"></div>
+      </div>
+
+      <!-- Pergunta do Desafio -->
+      <div class="question-title" id="game-question-text">
+        Qual é o nome desta música?
+      </div>
+
+      <!-- Alternativas de Resposta -->
+      <div class="options-grid" id="game-options-container">
+        <button class="option-btn" data-index="0">Opção 1</button>
+        <button class="option-btn" data-index="1">Opção 2</button>
+        <button class="option-btn" data-index="2">Opção 3</button>
+        <button class="option-btn" data-index="3">Opção 4</button>
+      </div>
+
+      <!-- Chat Rápido de Emojis -->
+      <div class="reactions-bar">
+        <button class="reaction-btn" data-emoji="🔥">🔥</button>
+        <button class="reaction-btn" data-emoji="⚡">⚡</button>
+        <button class="reaction-btn" data-emoji="👏">👏</button>
+        <button class="reaction-btn" data-emoji="😂">😂</button>
+        <button class="reaction-btn" data-emoji="💃">💃</button>
+      </div>
+
+      <!-- Barra de Power-ups -->
+      <div class="powerups-bar">
+        <button class="powerup-btn" id="btn-powerup-eliminate">
+          <div class="powerup-badge" id="badge-eliminate">3</div>
+          <span class="icon">❌</span>
+          <span class="label">-2 Erros</span>
+        </button>
+        <button class="powerup-btn" id="btn-powerup-freeze">
+          <div class="powerup-badge" id="badge-freeze">2</div>
+          <span class="icon">❄️</span>
+          <span class="label">Congelar</span>
+        </button>
+        <button class="powerup-btn" id="btn-powerup-hint">
+          <div class="powerup-badge" id="badge-hint">3</div>
+          <span class="icon">💡</span>
+          <span class="label">Dica Letra</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TELA 4: RESULTADO / PÓDIO                   -->
+    <!-- ========================================== -->
+    <section id="screen-results" class="screen">
+      <div style="text-align: center; margin-top: 10px;">
+        <h2 style="font-size: 26px; font-weight: 900; color: var(--accent-gold);" id="results-headline">FIM DE JOGO! 🏆</h2>
+        <p style="color: var(--text-secondary); font-size: 13px;" id="results-subtext">Confira o pódio da partida</p>
+      </div>
+
+      <!-- Pódio 3D dos Vencedores -->
+      <div class="podium-container" id="results-podium">
+        <!-- Renderizado dinamicamente -->
+      </div>
+
+      <!-- Recompensas Ganhas -->
+      <div class="rewards-card">
+        <div class="reward-item">
+          <div class="value" id="reward-score">+0</div>
+          <div class="lbl">Seus Pontos</div>
+        </div>
+        <div class="reward-item">
+          <div class="value" id="reward-coins">+0 🪙</div>
+          <div class="lbl">Moedas Ganhas</div>
+        </div>
+        <div class="reward-item">
+          <div class="value" id="reward-xp">+0 XP</div>
+          <div class="lbl">Experiência</div>
+        </div>
+      </div>
+
+      <div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px;">
+        <button id="btn-play-again" class="btn-primary">
+          JOGAR NOVAMENTE 🔁
+        </button>
+        <button id="btn-back-home" class="btn-secondary">
+          Voltar ao Menu Principal
+        </button>
+      </div>
+    </section>
+
+    <!-- MODAL: LOJA DE AVATARES -->
+    <div class="modal-overlay" id="modal-shop">
+      <div class="modal-box">
+        <h2>🛍️ Loja de Avatares</h2>
+        <p style="color: var(--text-secondary); font-size: 12px; margin-bottom: 12px;">Compre novos avatares usando suas moedas ganhas nas partidas!</p>
+        <div id="shop-avatars-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+          <!-- Itens da loja -->
+        </div>
+        <button class="modal-close-btn" id="btn-close-shop">Fechar</button>
+      </div>
+    </div>
+
+    <!-- MODAL: CÓDIGO DA SALA -->
+    <div class="modal-overlay" id="modal-join-code">
+      <div class="modal-box">
+        <h2>🔑 Entrar em Sala Privada</h2>
+        <p style="color: var(--text-secondary); font-size: 12px; margin-bottom: 12px;">Digite o código de 4 dígitos enviado pelo seu amigo:</p>
+        <input type="text" id="input-room-code" placeholder="Ex: BR42" maxlength="6" style="width: 100%; text-transform: uppercase; background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px; font-size: 20px; font-weight: 800; text-align: center; letter-spacing: 4px; margin-bottom: 14px; outline: none;">
+        <button id="btn-confirm-join" class="btn-primary">ENTRAR NA SALA</button>
+        <button class="modal-close-btn" id="btn-close-join">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- MODAL: CONFIGURAÇÕES -->
+    <div class="modal-overlay" id="modal-settings">
+      <div class="modal-box">
+        <h2>⚙️ Configurações</h2>
+        <div style="display: flex; flex-direction: column; gap: 14px; margin: 16px 0;">
+          <label style="display: flex; justify-content: space-between; align-items: center; font-size: 14px;">
+            <span>Efeitos Sonoros</span>
+            <input type="checkbox" id="check-sound-fx" checked style="width: 18px; height: 18px;">
+          </label>
+          <label style="display: flex; justify-content: space-between; align-items: center; font-size: 14px;">
+            <span>Modo Alto Contraste</span>
+            <input type="checkbox" id="check-high-contrast" style="width: 18px; height: 18px;">
+          </label>
+          <button id="btn-test-sound" style="background: var(--bg-card-hover); color: var(--accent-cyan); border: 1px solid var(--border-color); padding: 10px; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; font-size: 13px;">
+            🔊 Testar Efeitos de Áudio
+          </button>
+        </div>
+        <button class="modal-close-btn" id="btn-close-settings">Salvar e Fechar</button>
+      </div>
+    </div>
+
+    <!-- MODAL: ADICIONAR MÚSICA DO YOUTUBE -->
+    <div class="modal-overlay" id="modal-custom-youtube">
+      <div class="modal-box">
+        <h2>🎵 Adicionar Música do YouTube</h2>
+        <p style="color: var(--text-secondary); font-size: 12px; margin-bottom: 12px;">Cole o link ou ID de qualquer vídeo do YouTube e defina o início do refrão:</p>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px;">
+          <input type="text" id="custom-yt-url" placeholder="Link ou ID do YouTube (ex: dQw4w9WgXcQ)" style="background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px; font-size: 13px; outline: none;">
+          <input type="text" id="custom-yt-title" placeholder="Nome da Música" style="background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px; font-size: 13px; outline: none;">
+          <input type="text" id="custom-yt-artist" placeholder="Artista / Banda" style="background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px; font-size: 13px; outline: none;">
+          <div style="display: flex; gap: 8px;">
+            <input type="number" id="custom-yt-start" placeholder="Início (seg)" value="30" style="flex: 1; background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px; font-size: 13px; outline: none;">
+            <input type="number" id="custom-yt-end" placeholder="Fim (seg)" value="43" style="flex: 1; background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px; font-size: 13px; outline: none;">
+          </div>
+        </div>
+        <button id="btn-save-custom-track" class="btn-primary">ADICIONAR AO JOGO</button>
+        <button class="modal-close-btn" id="btn-close-custom">Cancelar</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SCRIPTS PRINCIPAIS -->
+  <script src="js/tracks.js"></script>
+  <script src="js/gameEngine.js"></script>
+  <script src="js/youtubePlayer.js"></script>
+  <script src="js/multiplayer.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+
