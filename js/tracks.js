@@ -1071,11 +1071,182 @@ const TRACKS_CATALOG = [
                                    "Banda Nacional",
                                    "Voz do Brasil"
                                ]
+    },
+    {
+        "id": "anime_01",
+        "title": "Cha-La Head-Cha-La (Dragon Ball Z)",
+        "artist": "Ricardo Silva",
+        "genre": "Animes & Rap Geek",
+        "audioUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/3d/13/1e/3d131ee3-b5e5-85d5-bfcc-33201620539f/mzaf_386488918619717467.plus.aac.p.m4a",
+        "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/fa/fe/30/fafe3025-36c1-da56-4e9f-2f0878b1e176/7509848801075.jpg/600x600bb.jpg",
+        "alternativeTitles": ["Dan Dan Kokoro Hikareteku", "We Gotta Power", "Makafushigi Adventure"],
+        "alternativeArtists": ["Edu Falaschi", "Hironobu Kageyama", "Rodrigo Firmino"],
+        "lyricsGap": {
+            "verseSnippet": "O cÃ©u resplandece ao meu redor, vou voar e as estrelas vÃ£o...",
+            "correctWord": "brilhar",
+            "alternativeWords": ["cair", "sumir", "queimar"],
+            "startSeconds": 0,
+            "cutSeconds": 5.8
+        }
+    },
+    {
+        "id": "anime_02",
+        "title": "Pegasus Fantasy (Cavaleiros do ZodÃ­aco)",
+        "artist": "Edu Falaschi",
+        "genre": "Animes & Rap Geek",
+        "audioUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/07/23/db/0723db15-e9d1-5224-3631-2a3dafc91def/mzaf_11451745450106626995.plus.aac.p.m4a",
+        "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/28/ff/91/28ff9192-6b0b-f2ea-0ded-548393451ec2/0.jpg/600x600bb.jpg",
+        "alternativeTitles": ["Soldier Dream", "Blue Forever", "Never"],
+        "alternativeArtists": ["Larissa Tassi", "Chequer Chequer", "Nobuo Yamada"],
+        "lyricsGap": {
+            "verseSnippet": "FaÃ§a elevar o cosmo no seu coraÃ§Ã£o, todo mal combater, despertar o...",
+            "correctWord": "poder",
+            "alternativeWords": ["dragÃ£o", "trovÃ£o", "herÃ³i"],
+            "startSeconds": 0,
+            "cutSeconds": 5.8
+        }
+    },
+    {
+        "id": "anime_03",
+        "title": "Temos que Pegar (PokÃ©mon)",
+        "artist": "Miura Jam",
+        "genre": "Animes & Rap Geek",
+        "audioUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/41/dd/4e/41dd4eb7-b893-aeab-d84d-56a3e8f9d2e1/mzaf_17292048229880772241.plus.aac.p.m4a",
+        "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/9b/e2/4f/9be24fb9-e3ff-8b02-c24e-f18d0b78254f/d8c9ae8c-0909-4554-989f-642fe8413ac1.jpg/600x600bb.jpg",
+        "alternativeTitles": ["Mundo PokÃ©mon", "Jornada Johto", "Batalha AvanÃ§ada"],
+        "alternativeArtists": ["JanaÃ­na Bianchi", "Rodrigo Firmino", "Larissa Tassi"],
+        "lyricsGap": {
+            "verseSnippet": "Esse meu jeito de viver ninguÃ©m nunca foi igual, a minha vida Ã© fazer o bem vencer o...",
+            "correctWord": "mal",
+            "alternativeWords": ["rival", "final", "caos"],
+            "startSeconds": 0,
+            "cutSeconds": 6.2
+        }
+    },
+    {
+        "id": "anime_04",
+        "title": "Blue Bird (Naruto Shippuden)",
+        "artist": "Ikimonogakari",
+        "genre": "Animes & Rap Geek",
+        "audioUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/9a/a5/c3/9aa5c3d6-b763-a852-e3f2-60f5270f196e/mzaf_13214537326205111491.plus.aac.p.m4a",
+        "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/48/f2/f7/48f2f77a-1229-2f65-87da-5efa9dab85b1/886445760033.jpg/600x600bb.jpg",
+        "alternativeTitles": ["Silhouette", "Sign", "Closer"],
+        "alternativeArtists": ["KANA-BOON", "FLOW", "Asian Kung-Fu Generation"],
+        "lyricsGap": {
+            "verseSnippet": "Habataitara modoranai to itte, mezashita no wa aoi aoi ano...",
+            "correctWord": "sora",
+            "alternativeWords": ["yume", "umi", "hana"],
+            "startSeconds": 0,
+            "cutSeconds": 6.5
+        }
+    },
+    {
+        "id": "anime_05",
+        "title": "Rap dos Hokages (A Vontade do Fogo)",
+        "artist": "7 Minutoz",
+        "genre": "Animes & Rap Geek",
+        "audioUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/d4/85/9d/d4859d42-614b-f485-6877-4974496b4790/mzaf_2263043015594958651.plus.aac.p.m4a",
+        "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/8c/63/ad/8c63add8-132c-6903-0ebd-4401bb310988/195918305016.jpg/600x600bb.jpg",
+        "alternativeTitles": ["Rap dos Akatsuki", "Rap do Minato", "Rap do Itachi"],
+        "alternativeArtists": ["Player Tauz", "MHRap", "AniRap"],
+        "lyricsGap": {
+            "verseSnippet": "Honrando a memÃ³ria de quem jÃ¡ se foi, quem protege a vila da folha...",
+            "correctWord": "sou eu",
+            "alternativeWords": ["Ã© o ninja", "renasceu", "lutou"],
+            "startSeconds": 0,
+            "cutSeconds": 5.8
+        }
+    },
+    {
+        "id": "anime_06",
+        "title": "Rap do Naruto (Um Dia Eu Vou Ser Hokage)",
+        "artist": "Player Tauz",
+        "genre": "Animes & Rap Geek",
+        "audioUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/8b/89/58/8b89582b-f314-ba3f-9366-98ea0e6c765f/mzaf_8264315665871755907.plus.aac.p.m4a",
+        "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/10/ec/0f/10ec0f8f-d4ae-ddd9-c0af-0616bf6a14ca/artwork.jpg/600x600bb.jpg",
+        "alternativeTitles": ["Rap do Sasuke", "Rap do Kakashi", "Rap do Pain"],
+        "alternativeArtists": ["7 Minutoz", "MHRap", "Basara"],
+        "lyricsGap": {
+            "verseSnippet": "Mesmo que todos me olhem com Ã³dio e desdÃ©m, eu nunca vou desistir de ninguÃ©m, eu serei...",
+            "correctWord": "Hokage",
+            "alternativeWords": ["o mais forte", "lendÃ¡rio", "um herÃ³i"],
+            "startSeconds": 0,
+            "cutSeconds": 6.0
+        }
+    },
+    {
+        "id": "anime_07",
+        "title": "Unravel (Tokyo Ghoul)",
+        "artist": "TK from Ling tosite sigure",
+        "genre": "Animes & Rap Geek",
+        "audioUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/3e/6b/f2/3e6bf2a5-f547-f33f-615f-7b8a37d5bbed/mzaf_13110023540909055333.plus.aac.p.m4a",
+        "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/b5/28/30/b5283070-a9c6-29ba-6644-635f566f26a4/jacket_AICL02717B00Z_550.jpg/600x600bb.jpg",
+        "alternativeTitles": ["Katharsis", "Asphyxia", "Munou"],
+        "alternativeArtists": ["amazarashi", "CÃ¶ shu Nie", "Ling tosite sigure"],
+        "lyricsGap": {
+            "verseSnippet": "Oshiete oshiete yo sono shikumi wo, boku no naka ni dare ga iru...",
+            "correctWord": "no",
+            "alternativeWords": ["ka", "da", "sa"],
+            "startSeconds": 0,
+            "cutSeconds": 5.5
+        }
+    },
+    {
+        "id": "anime_08",
+        "title": "Guren no Yumiya (Attack on Titan)",
+        "artist": "Linked Horizon",
+        "genre": "Animes & Rap Geek",
+        "audioUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/8e/d3/23/8ed323de-3b4a-5978-63e8-e8da11cc8403/mzaf_13830835556296346443.plus.aac.p.m4a",
+        "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/50/50/b3/5050b320-cd45-2ad7-b1b2-1b9b473d2475/PCSP_01397_itunes.png/600x600bb.jpg",
+        "alternativeTitles": ["Shinzou wo Sasageyo!", "Red Swan", "The Rumbling"],
+        "alternativeArtists": ["SiM", "Yoshiki", "Linked Horizon"],
+        "lyricsGap": {
+            "verseSnippet": "Seid ihr das Essen? Nein, wir sind der...",
+            "correctWord": "JÃ¤ger",
+            "alternativeWords": ["Titan", "Krieger", "Soldat"],
+            "startSeconds": 0,
+            "cutSeconds": 5.0
+        }
+    },
+    {
+        "id": "anime_09",
+        "title": "Butter-Fly (Digimon Adventure)",
+        "artist": "Oosawa Shou",
+        "genre": "Animes & Rap Geek",
+        "audioUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/5c/5e/23/5c5e237f-ce98-c87c-8887-b2dd432c5dbd/mzaf_10426596285708628073.plus.aac.p.m4a",
+        "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/2a/50/b1/2a50b1d2-8918-b819-e87b-b5208a230e51/digimon_1.jpg/600x600bb.jpg",
+        "alternativeTitles": ["Brave Heart", "Target", "The Biggest Dreamer"],
+        "alternativeArtists": ["Koji Wada", "Ayumi Miyazaki", "Hidenori Chiwata"],
+        "lyricsGap": {
+            "verseSnippet": "Gokai da rake no kankei mo warukunai na, kyuu ni naita sora ga hora...",
+            "correctWord": "aoi",
+            "alternativeWords": ["shiroi", "kurai", "tooi"],
+            "startSeconds": 0,
+            "cutSeconds": 5.5
+        }
+    },
+    {
+        "id": "anime_10",
+        "title": "Haruka Kanata (Naruto Opening 2)",
+        "artist": "Asian Kung-Fu Generation",
+        "genre": "Animes & Rap Geek",
+        "audioUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/bf/41/ad/bf41ade8-3140-ade0-659e-66113fe06636/mzaf_16441200818225061259.plus.aac.p.m4a",
+        "artworkUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/f9/fb/91/f9fb91e8-3a41-e08a-57b6-7fcb46aeb4e3/jacket_KSCL00542B00Z_550.jpg/600x600bb.jpg",
+        "alternativeTitles": ["GO!!!", "Rewrite", "After Dark"],
+        "alternativeArtists": ["FLOW", "Sambomaster", "Nobodyknows+"],
+        "lyricsGap": {
+            "verseSnippet": "Fumikomu ze akuseru, kakehiki nado wa nai sa...",
+            "correctWord": "sou da",
+            "alternativeWords": ["mada", "ikuzo", "saa"],
+            "startSeconds": 0,
+            "cutSeconds": 5.5
+        }
     }
 ];
 
 const MUSIC_GENRES = [
-  'Todos os Gêneros',
+  'Todos os GÃªneros',
+  'Animes & Rap Geek',
   'Rock Nacional',
   'Sertanejo',
   'MPB',
