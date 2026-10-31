@@ -20,6 +20,9 @@
         <span style="font-size: 10px; color: var(--accent-purple-light); background: #252738; padding: 2px 6px; border-radius: 8px;" id="header-rank">Bronze</span>
       </div>
       <div style="display: flex; gap: 8px; align-items: center;">
+        <button id="btn-open-premium" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 12px; cursor: pointer;">
+          👑 Sem Anúncios
+        </button>
         <div class="coins-badge">
           <span>🪙</span>
           <span id="header-coins">250</span>
@@ -46,9 +49,10 @@
       <div class="genre-container">
         <label for="select-genre">Gênero Musical</label>
         <select id="select-genre" class="genre-select">
-          <option value="Todos os Gêneros">🔥 Todos os Gêneros (Mix Brasil)</option>
+          <option value="Todos os Gêneros">🔥 Todos os Gêneros (Mix Brasil - 40 Músicas)</option>
           <option value="Rock Nacional">🎸 Rock Nacional</option>
           <option value="Sertanejo">🤠 Sertanejo</option>
+          <option value="Pagode / Samba">🪘 Pagode & Samba</option>
           <option value="MPB">☕ MPB & Clássicos</option>
           <option value="Funk / Pop">💃 Funk & Pop BR</option>
           <option value="Trap / Rap">🎤 Trap & Rap Nacional</option>
@@ -143,6 +147,9 @@
       <div class="game-header">
         <span class="round-indicator" id="game-round-indicator">RODADA 1/7</span>
         <div style="display: flex; gap: 6px; align-items: center;">
+          <button id="btn-skip-ad" style="background: #e11d48; color: #fff; border: none; border-radius: 12px; padding: 4px 8px; font-size: 11px; font-weight: 800; cursor: pointer;" title="Pular comercial do YouTube e ir para o refrão">
+            ⏩ Pular Anúncio
+          </button>
           <button id="btn-unmute-game" style="background: #252738; color: #fff; border: 1px solid var(--border-color); border-radius: 12px; padding: 4px 8px; font-size: 11px; font-weight: 700; cursor: pointer;">
             🔊 Ativar Som
           </button>
@@ -326,6 +333,28 @@
         </div>
         <button id="btn-save-custom-track" class="btn-primary">ADICIONAR AO JOGO</button>
         <button class="modal-close-btn" id="btn-close-custom">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- MODAL: LOGIN YOUTUBE PREMIUM (SEM ANÚNCIOS) -->
+    <div class="modal-overlay" id="modal-premium">
+      <div class="modal-box">
+        <h2>👑 Jogar Sem Anúncios (YouTube Premium)</h2>
+        <p style="color: var(--text-secondary); font-size: 13px; margin: 10px 0; line-height: 1.5;">
+          Se você possui uma assinatura do <b>YouTube Premium</b>, faça login na sua conta Google neste navegador. O YouTube reconhecerá sua assinatura e <b>removerá 100% dos comerciais</b> dos clipes do jogo!
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin: 16px 0;">
+          <button id="btn-login-google" class="btn-primary" style="background: #ea4335;">
+            🔗 Fazer Login no YouTube / Google
+          </button>
+          <button id="btn-activate-premium" class="btn-secondary" style="border-color: var(--accent-gold); color: var(--accent-gold);">
+            ✨ Já estou logado (Ativar Modo Premium)
+          </button>
+        </div>
+        <p style="font-size: 11px; color: var(--text-secondary); text-align: center;">
+          (Dica: se não tiver Premium, você também pode usar o botão vermelho <b>⏩ Pular Anúncio</b> durante a partida para ir direto ao refrão!)
+        </p>
+        <button class="modal-close-btn" id="btn-close-premium">Fechar</button>
       </div>
     </div>
 
