@@ -42,12 +42,28 @@ class SoundQuizApp {
     }
 
     // Listeners do Multiplayer Online em Tempo Real (WebRTC / PeerJS)
+    multiplayerManager.on("room_ready", (data) => {
+      document.getElementById("room-code-display").textContent = data.roomCode;
+      this.renderLobbyPlayers(data.players);
+    });
+
+    multiplayerManager.on("room_code_changed", (data) => {
+      document.getElementById("room-code-display").textContent = data.roomCode;
+    });
+
     multiplayerManager.on("room_update", (data) => {
       this.renderLobbyPlayers(data.players);
     });
 
+    multiplayerManager.on("room_closed", () => {
+      this.showScreen("screen-home");
+    });
+
     multiplayerManager.on("game_started_by_host", (data) => {
       this.currentRounds = data.rounds;
+      this.selectedMode = data.mode || multiplayerManager.gameMode;
+      this.selectedGenre = data.genre || multiplayerManager.selectedGenre;
+      this.selectedChallengeType = data.challengeType || "ALL";
       multiplayerManager.players = data.players;
       this.startGameplay();
     });
@@ -230,12 +246,13 @@ class SoundQuizApp {
     });
 
     document.getElementById("btn-start-game").addEventListener("click", () => {
-      this.currentRounds = gameEngine.generateRounds(this.selectedGenre, 7);
+      this.currentRounds = gameEngine.generateRounds(this.selectedGenre, 7, this.selectedChallengeType);
       multiplayerManager.startMatchWithPlayers(this.currentRounds);
       this.startGameplay();
     });
 
     document.getElementById("btn-leave-room").addEventListener("click", () => {
+      multiplayerManager.leaveRoom();
       this.showScreen("screen-home");
     });
 
@@ -288,14 +305,38 @@ class SoundQuizApp {
       if (code) {
         const profile = gameEngine.getProfile();
         this.closeModal("modal-join-code");
-        multiplayerManager.joinRoom(code, profile, () => {
-          this.showScreen("screen-room");
-          document.getElementById("room-code-display").textContent = code;
-          document.getElementById("btn-start-game").style.display = "none"; // Apenas o Host pode iniciar
-          document.getElementById("btn-share-whatsapp").style.display = "none";
-        }, (errMsg) => {
-          alert(errMsg);
-        });
+
+        multiplayerManager.joinRoom(
+          code,
+          profile,
+          (roomCode, initialPlayers) => {
+            // Chamado imediatamente ao iniciar conexão
+            this.showScreen("screen-room");
+            document.getElementById("room-code-display").textContent = roomCode;
+            document.getElementById("btn-start-game").style.display = "none";
+            document.getElementById("btn-share-whatsapp").style.display = "none";
+            const waitingMsg = document.getElementById("room-guest-waiting-msg");
+            if (waitingMsg) {
+              waitingMsg.style.display = "block";
+              document.getElementById("room-guest-waiting-title").textContent = "Conectando ao anfitrião...";
+              document.getElementById("room-guest-waiting-sub").textContent = `Estabelecendo conexão direta com a sala ${roomCode}...`;
+            }
+            this.renderLobbyPlayers(initialPlayers);
+          },
+          () => {
+            // Conexão confirmada com o Host
+            const waitingMsg = document.getElementById("room-guest-waiting-msg");
+            if (waitingMsg) {
+              waitingMsg.style.display = "block";
+              document.getElementById("room-guest-waiting-title").textContent = "Aguardando o anfitrião...";
+              document.getElementById("room-guest-waiting-sub").textContent = "Você está conectado na sala! O jogo começará automaticamente assim que o anfitrião iniciar.";
+            }
+          },
+          (errMsg) => {
+            alert(errMsg);
+            this.showScreen("screen-home");
+          }
+        );
       }
     });
 
@@ -489,29 +530,67 @@ class SoundQuizApp {
     document.getElementById("room-code-display").textContent = roomData.roomCode;
     document.getElementById("btn-start-game").style.display = "flex";
     document.getElementById("btn-share-whatsapp").style.display = "flex";
+    const guestWaitingMsg = document.getElementById("room-guest-waiting-msg");
+    if (guestWaitingMsg) guestWaitingMsg.style.display = "none";
 
     this.renderLobbyPlayers(roomData.players);
     this.showScreen("screen-room");
   }
 
   renderLobbyPlayers(players) {
-    document.getElementById("room-player-count").textContent = players.length;
+    const count = (players && Array.isArray(players)) ? players.length : 1;
+    const maxCapacity = (multiplayerManager.gameMode === "DUEL_1V1") ? 2 : 4;
+    const countSpan = document.getElementById("room-player-count");
+    if (countSpan) countSpan.textContent = count;
+    const countHeader = document.querySelector("#screen-room h4");
+    if (countHeader) {
+      countHeader.innerHTML = `Jogadores na Sala (<span id="room-player-count">${count}</span>/${maxCapacity})`;
+    }
+
     const listContainer = document.getElementById("room-players-list");
     if (!listContainer) return;
     listContainer.innerHTML = "";
 
+    const isGuest = !multiplayerManager.isHost;
+    const guestWaitingMsg = document.getElementById("room-guest-waiting-msg");
+    if (isGuest && guestWaitingMsg) {
+      guestWaitingMsg.style.display = "block";
+    } else if (!isGuest && guestWaitingMsg) {
+      guestWaitingMsg.style.display = "none";
+    }
+
+    if (!players || players.length === 0) {
+      listContainer.innerHTML = `
+        <div style="text-align: center; color: var(--text-secondary); padding: 24px; font-size: 13px;">
+          <div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
+          Aguardando conexão com a sala...
+        </div>
+      `;
+      return;
+    }
+
     players.forEach(p => {
       const item = document.createElement("div");
-      item.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border-color);";
+      item.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 6px;";
+      
+      const isConnecting = p.status === "connecting";
+      const statusBadge = isConnecting
+        ? `<span style="color: var(--accent-gold); font-size: 11px; font-weight: 700;">CONECTANDO ⏳</span>`
+        : `<span style="color: var(--accent-green); font-size: 12px; font-weight: 800;">PRONTO ✔</span>`;
+
+      const roleText = p.isBot 
+        ? "Bot Oponente" 
+        : (p.isHost ? "Anfitrião da Sala 👑" : (p.id === "p_local_guest" ? "Você (Convidado)" : "Amigo Conectado"));
+
       item.innerHTML = `
         <div style="display: flex; align-items: center; gap: 10px;">
-          <span style="font-size: 24px;">${p.avatar}</span>
+          <span style="font-size: 26px;">${p.avatar || "🎧"}</span>
           <div>
-            <div style="font-weight: 700; font-size: 14px;">${p.name} ${p.isHost ? "👑" : ""}</div>
-            <div style="font-size: 11px; color: var(--text-secondary);">${p.isBot ? "Bot Oponente" : (p.isHost ? "Anfitrião da Sala" : "Amigo Conectado")}</div>
+            <div style="font-weight: 700; font-size: 14px; color: var(--text-primary);">${p.name} ${p.isHost ? "👑" : ""}</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">${roleText}</div>
           </div>
         </div>
-        <span style="color: var(--accent-green); font-size: 12px; font-weight: 800;">PRONTO ✔</span>
+        ${statusBadge}
       `;
       listContainer.appendChild(item);
     });
@@ -865,7 +944,8 @@ class SoundQuizApp {
 
     // Ordena os jogadores por pontuação
     const sorted = [...multiplayerManager.players].sort((a, b) => b.score - a.score);
-    const isWinner = sorted[0].id === "p_user";
+    const myPlayer = multiplayerManager.players.find(p => !p.isBot && p.isHost === multiplayerManager.isHost);
+    const isWinner = sorted.length > 0 && myPlayer && sorted[0].id === myPlayer.id;
 
     // Adiciona recompensas
     const rewards = gameEngine.addRewards(this.userScore, isWinner);
