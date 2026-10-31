@@ -22,7 +22,7 @@ class CleanAudioEngine {
   /**
    * Toca o trecho de áudio sem nenhuma propaganda
    */
-  playSnippet(audioUrl, startSeconds = 0, endSeconds = 10, onFinish) {
+  playSnippet(audioUrl, startSeconds = 0, durationSeconds = 10, onFinish) {
     this.stop();
     this.onFinishCallback = onFinish;
     this.currentAudioUrl = audioUrl;
@@ -34,7 +34,7 @@ class CleanAudioEngine {
 
     try {
       this.audio.src = audioUrl;
-      this.audio.currentTime = 0;
+      this.audio.currentTime = Math.max(0, startSeconds || 0);
       this.audio.volume = 1.0;
 
       const playPromise = this.audio.play();
@@ -47,10 +47,10 @@ class CleanAudioEngine {
       console.error("Erro ao reproduzir áudio:", e);
     }
 
-    // Cronômetro para encerrar o trecho em 10 segundos
-    const durationMs = (endSeconds - startSeconds || 10) * 1000;
+    // Cronômetro para pausar o trecho no momento exato estipulado
+    const durationMs = Math.max(1, durationSeconds) * 1000;
     this.timer = setTimeout(() => {
-      this.stop();
+      this.pause();
       if (this.onFinishCallback) {
         const cb = this.onFinishCallback;
         this.onFinishCallback = null;
@@ -60,7 +60,36 @@ class CleanAudioEngine {
   }
 
   /**
-   * Pausa e reseta o áudio
+   * Pausa o áudio no instante atual (usado para pausar antes da palavra oculta)
+   */
+  pause() {
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
+    try {
+      this.audio.pause();
+    } catch (e) {}
+  }
+
+  /**
+   * Retoma a reprodução do áudio a partir do ponto de pausa
+   */
+  resume(durationSeconds = 0, onFinish = null) {
+    try {
+      this.audio.play().catch(() => {});
+      if (durationSeconds > 0) {
+        if (this.timer) clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+          this.pause();
+          if (onFinish) onFinish();
+        }, durationSeconds * 1000);
+      }
+    } catch (e) {}
+  }
+
+  /**
+   * Para e reseta o áudio para o início
    */
   stop() {
     if (this.timer) {
