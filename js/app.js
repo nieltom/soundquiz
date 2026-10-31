@@ -231,8 +231,7 @@ class SoundQuizApp {
     if (testSoundBtn) {
       testSoundBtn.addEventListener("click", () => {
         this.playSound("correct");
-        ytAudioPlayer.startSynthMelodyFallback("Rock Nacional");
-        setTimeout(() => ytAudioPlayer.stopSynthMelody(), 2000);
+        ytAudioPlayer.unmute();
       });
     }
 
@@ -459,16 +458,14 @@ class SoundQuizApp {
     vinyl.classList.remove("paused");
     document.getElementById("soundwave-status").textContent = "Tocando trecho musical...";
 
-    // Toca o trecho do áudio via YouTube IFrame oficial (com fallback de sintetizador)
+    // Toca o trecho oficial do clipe do YouTube
     ytAudioPlayer.playSnippet(
       challenge.track.videoId,
       challenge.track.startSeconds,
       challenge.track.endSeconds,
       () => {
-        // Snippet finalizado
         document.getElementById("soundwave-status").textContent = "Tempo esgotando!";
-      },
-      challenge.track.genre
+      }
     );
 
     // Inicia simulação de respostas dos oponentes bots
