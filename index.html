@@ -182,6 +182,9 @@
       </div>
 
       <!-- Pergunta do Desafio -->
+      <div style="text-align: center; margin-bottom: 4px;">
+        <span id="game-challenge-badge" style="font-size: 11px; text-transform: uppercase; font-weight: 800; color: var(--accent-cyan); background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.3); padding: 3px 10px; border-radius: 8px;">Qual é a música?</span>
+      </div>
       <div class="question-title" id="game-question-text">
         Qual é o nome desta música?
       </div>
@@ -342,6 +345,91 @@
 
         <button id="btn-save-profile" class="btn-primary">SALVAR MEU PERFIL</button>
         <button class="modal-close-btn" id="btn-close-profile">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- MODAL: CONFIGURAÇÃO DE PARTIDA (MODO, ESTILO E DESAFIO) -->
+    <div class="modal-overlay" id="modal-match-config">
+      <div class="modal-box" style="max-height: 88vh; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div>
+            <h2 style="margin: 0; font-size: 18px;" id="config-mode-title">⚡ Duelo 1v1</h2>
+            <div style="font-size: 11px; color: var(--text-secondary);" id="config-mode-desc">Partida rápida mano a mano</div>
+          </div>
+          <span id="config-mode-badge" style="background: var(--accent-purple); color: #fff; font-size: 11px; padding: 3px 8px; border-radius: 8px; font-weight: 800;">1v1</span>
+        </div>
+
+        <!-- 1. CONVIDAR OU SEGUIR SOZINHO -->
+        <label style="font-size: 11px; color: var(--text-secondary); font-weight: 800; text-transform: uppercase;">1. Como você quer jogar?</label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0 16px 0;">
+          <button type="button" class="setup-option-btn active" id="btn-setup-solo" data-type="solo">
+            <span style="font-size: 24px;">🤖</span>
+            <div style="font-weight: 800; font-size: 13px;">Seguir Sozinho</div>
+            <div style="font-size: 10px; color: var(--text-secondary);">Jogue agora contra bots</div>
+          </button>
+          <button type="button" class="setup-option-btn" id="btn-setup-friends" data-type="friends">
+            <span style="font-size: 24px;">👥</span>
+            <div style="font-weight: 800; font-size: 13px;">Convidar Amigo</div>
+            <div style="font-size: 10px; color: var(--text-secondary);">Link / WhatsApp / Código</div>
+          </button>
+        </div>
+
+        <!-- 2. ESTILO MUSICAL -->
+        <label style="font-size: 11px; color: var(--text-secondary); font-weight: 800; text-transform: uppercase;">2. Estilo Musical (Gênero)</label>
+        <select id="config-select-genre" class="genre-select" style="margin: 6px 0 16px 0; width: 100%;">
+          <option value="Todos os Gêneros">🔥 Todos os Gêneros (Mix Brasil - 40 Músicas)</option>
+          <option value="Rock Nacional">🎸 Rock Nacional</option>
+          <option value="Sertanejo">🤠 Sertanejo</option>
+          <option value="Pagode / Samba">🪘 Pagode & Samba</option>
+          <option value="MPB">☕ MPB & Clássicos</option>
+          <option value="Funk / Pop">💃 Funk & Pop BR</option>
+          <option value="Trap / Rap">🎤 Trap & Rap Nacional</option>
+        </select>
+
+        <!-- 3. TIPO DE DESAFIO -->
+        <label style="font-size: 11px; color: var(--text-secondary); font-weight: 800; text-transform: uppercase;">3. Tipo de Desafio</label>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin: 8px 0 18px 0;" id="config-challenge-container">
+          <button type="button" class="challenge-option-btn" data-challenge="COMPLETE_LYRICS">
+            <span style="font-size: 20px;">📝</span>
+            <div style="flex: 1;">
+              <div style="font-weight: 800; font-size: 13px; color: var(--accent-cyan);">Complete a Música</div>
+              <div style="font-size: 10px; color: var(--text-secondary);">O áudio pausa no trecho exato para você completar a frase!</div>
+            </div>
+            <span class="check-icon"></span>
+          </button>
+
+          <button type="button" class="challenge-option-btn" data-challenge="GUESS_ARTIST">
+            <span style="font-size: 20px;">🎤</span>
+            <div style="flex: 1;">
+              <div style="font-weight: 800; font-size: 13px;">Acertar o Cantor / Banda</div>
+              <div style="font-size: 10px; color: var(--text-secondary);">Ouça e descubra quem está cantando</div>
+            </div>
+            <span class="check-icon"></span>
+          </button>
+
+          <button type="button" class="challenge-option-btn" data-challenge="GUESS_TITLE">
+            <span style="font-size: 20px;">🎵</span>
+            <div style="flex: 1;">
+              <div style="font-weight: 800; font-size: 13px;">Acertar a Música</div>
+              <div style="font-size: 10px; color: var(--text-secondary);">Descubra qual é o título da música</div>
+            </div>
+            <span class="check-icon"></span>
+          </button>
+
+          <button type="button" class="challenge-option-btn active" data-challenge="ALL">
+            <span style="font-size: 20px;">🎲</span>
+            <div style="flex: 1;">
+              <div style="font-weight: 800; font-size: 13px;">Mix Variado (Todos)</div>
+              <div style="font-size: 10px; color: var(--text-secondary);">Alterna entre todos os tipos de desafios</div>
+            </div>
+            <span class="check-icon">✔</span>
+          </button>
+        </div>
+
+        <button id="btn-config-start" class="btn-primary" style="margin-top: 0;">
+          COMEÇAR PARTIDA 🚀
+        </button>
+        <button class="modal-close-btn" id="btn-close-config">Voltar ao Menu</button>
       </div>
     </div>
 
