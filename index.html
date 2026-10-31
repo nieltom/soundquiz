@@ -20,9 +20,9 @@
         <span style="font-size: 10px; color: var(--accent-purple-light); background: #252738; padding: 2px 6px; border-radius: 8px;" id="header-rank">Bronze</span>
       </div>
       <div style="display: flex; gap: 8px; align-items: center;">
-        <button id="btn-open-premium" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 12px; cursor: pointer;">
-          👑 Sem Anúncios
-        </button>
+        <span style="font-size: 11px; font-weight: 800; color: var(--accent-green); background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-green); padding: 3px 8px; border-radius: 12px;">
+          🛡️ 100% SEM PROPAGANDAS
+        </span>
         <div class="coins-badge">
           <span>🪙</span>
           <span id="header-coins">250</span>
@@ -40,10 +40,10 @@
         <p>Adivinhe a música mais rápido que seus amigos!</p>
       </div>
 
-      <!-- Dica de Áudio HTTP vs Local -->
-      <div id="audio-notice" style="background: rgba(124, 58, 237, 0.15); border: 1px solid var(--accent-purple); border-radius: var(--radius-md); padding: 8px 12px; margin-bottom: 12px; font-size: 11px; color: var(--accent-purple-light); display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 16px;">🔊</span>
-        <span>Para o som oficial do YouTube tocar sem restrições, dê 2 cliques no <b>iniciar.bat</b>!</span>
+      <!-- Dica de Áudio 100% Sem Anúncios -->
+      <div id="audio-notice" style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-green); border-radius: var(--radius-md); padding: 8px 12px; margin-bottom: 12px; font-size: 11px; color: var(--accent-green); display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 16px;">✨</span>
+        <span>Áudios originais de estúdio via CDN: <b>100% livre de propagandas</b>!</span>
       </div>
 
       <div class="genre-container">
@@ -147,9 +147,6 @@
       <div class="game-header">
         <span class="round-indicator" id="game-round-indicator">RODADA 1/7</span>
         <div style="display: flex; gap: 6px; align-items: center;">
-          <button id="btn-skip-ad" style="background: #e11d48; color: #fff; border: none; border-radius: 12px; padding: 4px 8px; font-size: 11px; font-weight: 800; cursor: pointer;" title="Pular comercial do YouTube e ir para o refrão">
-            ⏩ Pular Anúncio
-          </button>
           <button id="btn-unmute-game" style="background: #252738; color: #fff; border: 1px solid var(--border-color); border-radius: 12px; padding: 4px 8px; font-size: 11px; font-weight: 700; cursor: pointer;">
             🔊 Ativar Som
           </button>
@@ -173,15 +170,15 @@
         </div>
       </div>
 
-      <!-- Moldura do Som / YouTube Player Oficial -->
+      <!-- Moldura do Som (Player de Áudio Estilo SongPop) -->
       <div class="media-visualizer-card">
-        <!-- Iframe do YouTube oculto esteticamente mas ativo em conformidade com Google ToS -->
-        <div id="yt-audio-element" class="yt-hidden-player"></div>
+        <img id="album-cover" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23171822'/></svg>" alt="Capa" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(10px) brightness(0.35); transform: scale(1.1);">
         
-        <div class="vinyl-disc" id="vinyl-disc">
-          <span>🎵</span>
+        <div class="vinyl-disc" id="vinyl-disc" style="position: relative; z-index: 2; width: 72px; height: 72px; border-radius: 50%; background: #000; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.8); border: 3px solid #333;">
+          <img id="vinyl-art" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'><circle cx='22' cy='22' r='20' fill='%237c3aed'/></svg>" alt="Vinil" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover;">
         </div>
-        <div class="soundwave-indicator" id="soundwave-status">
+        
+        <div class="soundwave-indicator" id="soundwave-status" style="position: relative; z-index: 2; margin-top: 8px; font-size: 13px; font-weight: 700; color: var(--accent-cyan);">
           Tocando trecho musical...
         </div>
       </div>
