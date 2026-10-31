@@ -29,13 +29,29 @@ class CleanAudioEngine {
 
     if (!audioUrl) {
       console.warn("Nenhum audioUrl fornecido.");
+      if (onFinish) onFinish();
       return;
     }
 
     try {
       this.audio.src = audioUrl;
-      this.audio.currentTime = Math.max(0, startSeconds || 0);
       this.audio.volume = 1.0;
+
+      const seekAudio = () => {
+        try {
+          if (startSeconds > 0 && this.audio.duration && this.audio.duration > startSeconds) {
+            this.audio.currentTime = startSeconds;
+          }
+        } catch (e) {
+          console.warn("Aviso ao buscar tempo no áudio:", e);
+        }
+      };
+
+      if (this.audio.readyState >= 2) {
+        seekAudio();
+      } else {
+        this.audio.addEventListener("loadedmetadata", seekAudio, { once: true });
+      }
 
       const playPromise = this.audio.play();
       if (playPromise !== undefined) {
@@ -44,7 +60,7 @@ class CleanAudioEngine {
         });
       }
     } catch (e) {
-      console.error("Erro ao reproduzir áudio:", e);
+      console.warn("Erro ao reproduzir áudio:", e);
     }
 
     // Cronômetro para pausar o trecho no momento exato estipulado
