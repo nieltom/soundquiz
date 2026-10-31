@@ -39,7 +39,21 @@ class SoundQuizApp {
       this.openModal("modal-join-code");
     }
 
-    // Listener para reações flutuantes de outros jogadores
+    // Listeners do Multiplayer Online em Tempo Real (WebRTC / PeerJS)
+    multiplayerManager.on("room_update", (data) => {
+      this.renderLobbyPlayers(data.players);
+    });
+
+    multiplayerManager.on("game_started_by_host", (data) => {
+      this.currentRounds = data.rounds;
+      multiplayerManager.players = data.players;
+      this.startGameplay();
+    });
+
+    multiplayerManager.on("player_answered", (data) => {
+      this.renderPlayersBar();
+    });
+
     multiplayerManager.on("chat_reaction", (data) => {
       this.triggerFloatingEmoji(data.emoji, data.playerName);
     });
@@ -165,6 +179,8 @@ class SoundQuizApp {
     });
 
     document.getElementById("btn-start-game").addEventListener("click", () => {
+      this.currentRounds = gameEngine.generateRounds(this.selectedGenre, 7);
+      multiplayerManager.startMatchWithPlayers(this.currentRounds);
       this.startGameplay();
     });
 
@@ -215,44 +231,27 @@ class SoundQuizApp {
     document.getElementById("btn-close-custom").addEventListener("click", () => this.closeModal("modal-custom-youtube"));
     document.getElementById("btn-save-custom-track").addEventListener("click", () => this.handleSaveCustomTrack());
 
-    // Modal Premium (Login YouTube)
-    const btnOpenPremium = document.getElementById("btn-open-premium");
-    if (btnOpenPremium) {
-      btnOpenPremium.addEventListener("click", () => this.openModal("modal-premium"));
-    }
-    const btnClosePremium = document.getElementById("btn-close-premium");
-    if (btnClosePremium) {
-      btnClosePremium.addEventListener("click", () => this.closeModal("modal-premium"));
-    }
-    const btnLoginGoogle = document.getElementById("btn-login-google");
-    if (btnLoginGoogle) {
-      btnLoginGoogle.addEventListener("click", () => {
-        window.open("https://accounts.google.com/ServiceLogin?service=youtube&continue=https://www.youtube.com", "_blank");
-      });
-    }
-    const btnActivatePremium = document.getElementById("btn-activate-premium");
-    if (btnActivatePremium) {
-      btnActivatePremium.addEventListener("click", () => {
-        const profile = gameEngine.getProfile();
-        profile.isPremium = true;
-        gameEngine.saveProfile(profile);
-        this.updateProfileUI();
-        this.closeModal("modal-premium");
-        alert("👑 Modo Premium ativado! Se você já fez login no YouTube neste navegador, os vídeos agora tocarão sem anúncios.");
-      });
-    }
+    // Edição de Perfil (Nome e Avatar)
+    document.getElementById("profile-pill").addEventListener("click", () => this.openProfileEditModal());
+    document.getElementById("btn-close-profile").addEventListener("click", () => this.closeModal("modal-profile-edit"));
+    document.getElementById("btn-save-profile").addEventListener("click", () => this.saveProfileEdit());
 
-    // Botão Pular Anúncio (Force Skip / Seek to startSeconds)
-    const skipAdBtn = document.getElementById("btn-skip-ad");
-    if (skipAdBtn) {
-      skipAdBtn.addEventListener("click", () => {
-        if (this.currentChallenge && this.currentChallenge.track) {
-          ytAudioPlayer.skipAd(this.currentChallenge.track.startSeconds);
-          skipAdBtn.textContent = "⏩ Pulando...";
-          setTimeout(() => { skipAdBtn.textContent = "⏩ Pular Anúncio"; }, 1000);
-        }
-      });
-    }
+    // Entrar em Sala Online
+    document.getElementById("btn-confirm-join").addEventListener("click", () => {
+      const code = document.getElementById("input-room-code").value.trim().toUpperCase();
+      if (code) {
+        const profile = gameEngine.getProfile();
+        this.closeModal("modal-join-code");
+        multiplayerManager.joinRoom(code, profile, () => {
+          this.showScreen("screen-room");
+          document.getElementById("room-code-display").textContent = code;
+          document.getElementById("btn-start-game").style.display = "none"; // Apenas o Host pode iniciar
+          document.getElementById("btn-share-whatsapp").style.display = "none";
+        }, (errMsg) => {
+          alert(errMsg);
+        });
+      }
+    });
 
     // Botão de Desmutar Áudio na tela de jogo
     const unmuteBtn = document.getElementById("btn-unmute-game");
@@ -405,43 +404,108 @@ class SoundQuizApp {
     }
   }
 
+  openProfileEditModal() {
+    const profile = gameEngine.getProfile();
+    const inputName = document.getElementById("input-edit-username");
+    if (inputName) inputName.value = profile.username;
+
+    this.selectedEditAvatar = profile.avatar;
+
+    const avatars = ["🎸", "🎤", "🎹", "🎧", "🎷", "🥁", "🤠", "⚡", "👑", "🔥", "💃", "👽", "🦁", "🐯", "🚀", "💎", "⭐", "🦄"];
+    const grid = document.getElementById("avatar-select-grid");
+    if (grid) {
+      grid.innerHTML = "";
+      avatars.forEach(av => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.style.cssText = `background: ${av === this.selectedEditAvatar ? "var(--accent-purple)" : "var(--bg-card-hover)"}; border: 1px solid var(--border-color); border-radius: 10px; font-size: 24px; padding: 6px; cursor: pointer;`;
+        item.textContent = av;
+        item.addEventListener("click", () => {
+          this.selectedEditAvatar = av;
+          grid.querySelectorAll("button").forEach(b => b.style.background = "var(--bg-card-hover)");
+          item.style.background = "var(--accent-purple)";
+        });
+        grid.appendChild(item);
+      });
+    }
+
+    this.openModal("modal-profile-edit");
+  }
+
+  saveProfileEdit() {
+    const inputName = document.getElementById("input-edit-username");
+    const newName = inputName ? inputName.value.trim() : "";
+
+    if (!newName) {
+      alert("Por favor, digite um nome válido!");
+      return;
+    }
+
+    const profile = gameEngine.getProfile();
+    profile.username = newName;
+    if (this.selectedEditAvatar) profile.avatar = this.selectedEditAvatar;
+
+    gameEngine.saveProfile(profile);
+    this.updateProfileUI();
+
+    // Atualiza jogador atual no multiplayer
+    const me = multiplayerManager.players.find(p => p.isHost === multiplayerManager.isHost && !p.isBot);
+    if (me) {
+      me.name = profile.username;
+      me.avatar = profile.avatar;
+    }
+
+    this.closeModal("modal-profile-edit");
+    alert("Perfil salvo com sucesso!");
+  }
+
   openLobbyRoom() {
     const profile = gameEngine.getProfile();
-    const roomData = multiplayerManager.createRoom(this.selectedMode, profile);
+    const roomData = multiplayerManager.createRoom(this.selectedMode, profile, this.selectedGenre);
 
     document.getElementById("room-code-display").textContent = roomData.roomCode;
-    document.getElementById("room-player-count").textContent = roomData.players.length;
+    document.getElementById("btn-start-game").style.display = "flex";
+    document.getElementById("btn-share-whatsapp").style.display = "flex";
 
+    this.renderLobbyPlayers(roomData.players);
+    this.showScreen("screen-room");
+  }
+
+  renderLobbyPlayers(players) {
+    document.getElementById("room-player-count").textContent = players.length;
     const listContainer = document.getElementById("room-players-list");
+    if (!listContainer) return;
     listContainer.innerHTML = "";
 
-    roomData.players.forEach(p => {
+    players.forEach(p => {
       const item = document.createElement("div");
       item.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border-color);";
       item.innerHTML = `
         <div style="display: flex; align-items: center; gap: 10px;">
           <span style="font-size: 24px;">${p.avatar}</span>
           <div>
-            <div style="font-weight: 700; font-size: 14px;">${p.name}</div>
-            <div style="font-size: 11px; color: var(--text-secondary);">${p.isHost ? "👑 Anfitrião" : "Jogador Conectado"}</div>
+            <div style="font-weight: 700; font-size: 14px;">${p.name} ${p.isHost ? "👑" : ""}</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">${p.isBot ? "Bot Oponente" : (p.isHost ? "Anfitrião da Sala" : "Amigo Conectado")}</div>
           </div>
         </div>
         <span style="color: var(--accent-green); font-size: 12px; font-weight: 800;">PRONTO ✔</span>
       `;
       listContainer.appendChild(item);
     });
-
-    this.showScreen("screen-room");
   }
 
   startMatchDirectly() {
     const profile = gameEngine.getProfile();
-    multiplayerManager.createRoom(this.selectedMode, profile);
+    this.currentRounds = gameEngine.generateRounds(this.selectedGenre, 7);
+    multiplayerManager.createRoom(this.selectedMode, profile, this.selectedGenre);
+    multiplayerManager.startMatchWithPlayers(this.currentRounds);
     this.startGameplay();
   }
 
   startGameplay() {
-    this.currentRounds = gameEngine.generateRounds(this.selectedGenre, 7);
+    if (!this.currentRounds || this.currentRounds.length === 0) {
+      this.currentRounds = gameEngine.generateRounds(this.selectedGenre, 7);
+    }
     this.currentRoundIndex = 0;
     this.userScore = 0;
     this.userStreak = 0;
@@ -585,11 +649,13 @@ class SoundQuizApp {
       });
 
       this.userScore += points;
-      const userPlayer = multiplayerManager.players.find(p => p.id === "p_user");
+      const userPlayer = multiplayerManager.players.find(p => p.id === "p_host" || p.id === "p_user" || (!p.isBot && p.isHost === multiplayerManager.isHost));
       if (userPlayer) {
         userPlayer.score = this.userScore;
         userPlayer.hasAnswered = true;
       }
+
+      multiplayerManager.submitUserAnswer(true, points);
 
       clickedBtn.classList.add("correct");
       this.playSound("correct");
@@ -600,6 +666,12 @@ class SoundQuizApp {
       }
     } else {
       this.userStreak = 0;
+      const userPlayer = multiplayerManager.players.find(p => p.id === "p_host" || p.id === "p_user" || (!p.isBot && p.isHost === multiplayerManager.isHost));
+      if (userPlayer) {
+        userPlayer.hasAnswered = true;
+      }
+      multiplayerManager.submitUserAnswer(false, 0);
+
       clickedBtn.classList.add("wrong");
       this.playSound("wrong");
 
