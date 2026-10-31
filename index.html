@@ -14,18 +14,17 @@
 
     <!-- BARRA SUPERIOR (HEADER GLOBAL) -->
     <header class="top-nav">
-      <div class="user-pill" id="profile-pill" style="cursor: pointer;">
+      <div class="user-pill" id="profile-pill" style="cursor: pointer;" title="Clique para editar seu nome e avatar">
         <span class="user-avatar-small" id="header-avatar">🎸</span>
         <span id="header-username">Jogador</span>
         <span style="font-size: 10px; color: var(--accent-purple-light); background: #252738; padding: 2px 6px; border-radius: 8px;" id="header-rank">Bronze</span>
+        <span style="font-size: 12px; margin-left: 2px;">✏️</span>
       </div>
       <div style="display: flex; gap: 8px; align-items: center;">
-        <span style="font-size: 11px; font-weight: 800; color: var(--accent-green); background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-green); padding: 3px 8px; border-radius: 12px;">
-          🛡️ 100% SEM PROPAGANDAS
-        </span>
-        <div class="coins-badge">
-          <span>🪙</span>
+        <div class="coins-badge" title="Suas Moedas Ganhas (use na Loja de Avatares)">
+          <span style="font-size: 13px;">🟡</span>
           <span id="header-coins">250</span>
+          <span style="font-size: 10px; color: var(--accent-gold); font-weight: 600;">moedas</span>
         </div>
         <button id="btn-open-settings" style="background: transparent; border: none; font-size: 18px; cursor: pointer; color: var(--text-secondary);">⚙️</button>
       </div>
@@ -38,12 +37,6 @@
       <div class="brand-hero">
         <h1>SOUNDQUIZ 🇧🇷</h1>
         <p>Adivinhe a música mais rápido que seus amigos!</p>
-      </div>
-
-      <!-- Dica de Áudio 100% Sem Anúncios -->
-      <div id="audio-notice" style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-green); border-radius: var(--radius-md); padding: 8px 12px; margin-bottom: 12px; font-size: 11px; color: var(--accent-green); display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 16px;">✨</span>
-        <span>Áudios originais de estúdio via CDN: <b>100% livre de propagandas</b>!</span>
       </div>
 
       <div class="genre-container">
@@ -333,29 +326,29 @@
       </div>
     </div>
 
-    <!-- MODAL: LOGIN YOUTUBE PREMIUM (SEM ANÚNCIOS) -->
-    <div class="modal-overlay" id="modal-premium">
+    <!-- MODAL: EDITAR PERFIL (NOME E AVATAR) -->
+    <div class="modal-overlay" id="modal-profile-edit">
       <div class="modal-box">
-        <h2>👑 Jogar Sem Anúncios (YouTube Premium)</h2>
-        <p style="color: var(--text-secondary); font-size: 13px; margin: 10px 0; line-height: 1.5;">
-          Se você possui uma assinatura do <b>YouTube Premium</b>, faça login na sua conta Google neste navegador. O YouTube reconhecerá sua assinatura e <b>removerá 100% dos comerciais</b> dos clipes do jogo!
-        </p>
-        <div style="display: flex; flex-direction: column; gap: 10px; margin: 16px 0;">
-          <button id="btn-login-google" class="btn-primary" style="background: #ea4335;">
-            🔗 Fazer Login no YouTube / Google
-          </button>
-          <button id="btn-activate-premium" class="btn-secondary" style="border-color: var(--accent-gold); color: var(--accent-gold);">
-            ✨ Já estou logado (Ativar Modo Premium)
-          </button>
+        <h2>✏️ Editar Seu Perfil</h2>
+        <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 14px;">Escolha o seu nome e avatar que aparecerão para os outros jogadores:</p>
+        
+        <label style="font-size: 11px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase;">Seu Nome / Apelido</label>
+        <input type="text" id="input-edit-username" maxlength="16" placeholder="Digite seu nome..." style="width: 100%; background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px; font-size: 16px; font-weight: 700; margin: 6px 0 16px 0; outline: none;">
+
+        <label style="font-size: 11px; color: var(--text-secondary); font-weight: 700; text-transform: uppercase;">Escolha seu Avatar Musical</label>
+        <div id="avatar-select-grid" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 8px 0 16px 0;">
+          <!-- Ícones de avatares -->
         </div>
-        <p style="font-size: 11px; color: var(--text-secondary); text-align: center;">
-          (Dica: se não tiver Premium, você também pode usar o botão vermelho <b>⏩ Pular Anúncio</b> durante a partida para ir direto ao refrão!)
-        </p>
-        <button class="modal-close-btn" id="btn-close-premium">Fechar</button>
+
+        <button id="btn-save-profile" class="btn-primary">SALVAR MEU PERFIL</button>
+        <button class="modal-close-btn" id="btn-close-profile">Cancelar</button>
       </div>
     </div>
 
   </div>
+
+  <!-- BIBLIOTECA PEERJS PARA MULTIPLAYER REAL P2P -->
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
   <!-- SCRIPTS PRINCIPAIS -->
   <script src="js/tracks.js"></script>
