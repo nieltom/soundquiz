@@ -56,18 +56,22 @@ class GameEngine {
     if (challengeType === "GUESS_TITLE") {
       questionText = "Qual é o nome desta música?";
       correctText = track.title;
-      const wrong = [...track.alternativeTitles];
+      const otherTracks = TRACKS_CATALOG.filter(t => t.id !== track.id && t.title !== track.title);
+      const shuffledOthers = [...otherTracks].sort(() => Math.random() - 0.5);
+      const wrong = shuffledOthers.slice(0, 3).map(t => t.title);
       options = [correctText, ...wrong].sort(() => Math.random() - 0.5);
     } else if (challengeType === "GUESS_ARTIST") {
       questionText = "Quem canta este sucesso?";
       correctText = track.artist;
-      const wrong = [...track.alternativeArtists];
+      const otherArtists = [...new Set(TRACKS_CATALOG.filter(t => t.artist !== track.artist).map(t => t.artist))];
+      const shuffledArtists = otherArtists.sort(() => Math.random() - 0.5);
+      const wrong = shuffledArtists.slice(0, 3);
       options = [correctText, ...wrong].sort(() => Math.random() - 0.5);
     } else {
       // COMPLETE_LYRICS
-      questionText = track.lyricsGap.verseSnippet;
-      correctText = track.lyricsGap.correctWord;
-      const wrong = [...track.lyricsGap.alternativeWords];
+      questionText = track.lyricsGap ? track.lyricsGap.verseSnippet : "Complete a letra:";
+      correctText = track.lyricsGap ? track.lyricsGap.correctWord : "sucesso";
+      const wrong = track.lyricsGap ? track.lyricsGap.alternativeWords : ["amor", "coração", "vida"];
       options = [correctText, ...wrong].sort(() => Math.random() - 0.5);
     }
 
