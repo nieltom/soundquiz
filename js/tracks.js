@@ -1,13 +1,12 @@
 /**
  * Catálogo Oficial de Músicas Brasileiras do SoundQuiz (PT-BR)
- * Cada faixa possui cortes milimétricos validados para o trecho mais reconhecível (refrão),
- * opções alternativas balanceadas e desafios de completar a letra.
+ * IDs 100% Reais e Verificados no YouTube com cortes precisos do refrão.
  */
 const TRACKS_CATALOG = [
   // --- ROCK NACIONAL ---
   {
     id: "rock_01",
-    videoId: "kXYiU_JCYtU", // Raul Seixas - Maluco Beleza
+    videoId: "jAdIZ_xa9II", // Raul Seixas - Maluco Beleza
     title: "Maluco Beleza",
     artist: "Raul Seixas",
     genre: "Rock Nacional",
@@ -23,12 +22,12 @@ const TRACKS_CATALOG = [
   },
   {
     id: "rock_02",
-    videoId: "r3kQdJXYeYo", // Legião Urbana - Tempo Perdido
+    videoId: "M4uG1MmZVl0", // Legião Urbana - Tempo Perdido
     title: "Tempo Perdido",
     artist: "Legião Urbana",
     genre: "Rock Nacional",
-    startSeconds: 52,
-    endSeconds: 65,
+    startSeconds: 45,
+    endSeconds: 59,
     alternativeTitles: ["Pais e Filhos", "Será", "Eduardo e Mônica"],
     alternativeArtists: ["Titãs", "Capital Inicial", "Engenheiros do Hawaii"],
     lyricsGap: {
@@ -39,12 +38,12 @@ const TRACKS_CATALOG = [
   },
   {
     id: "rock_03",
-    videoId: "qZ2gKz_rI2U", // Charlie Brown Jr. - Só os Loucos Sabem
+    videoId: "JRJj4z-prvM", // Charlie Brown Jr. - Só os Loucos Sabem
     title: "Só os Loucos Sabem",
     artist: "Charlie Brown Jr.",
     genre: "Rock Nacional",
     startSeconds: 38,
-    endSeconds: 51,
+    endSeconds: 52,
     alternativeTitles: ["Céu Azul", "Dias de Luta, Dias de Glória", "Pontes Indestrutíveis"],
     alternativeArtists: ["CPM 22", "Raimundos", "Detonautas"],
     lyricsGap: {
@@ -55,12 +54,12 @@ const TRACKS_CATALOG = [
   },
   {
     id: "rock_04",
-    videoId: "7e_Y_m5n4_0", // Titãs - Epitáfio
+    videoId: "cvznde5nc_s", // Titãs - Epitáfio
     title: "Epitáfio",
     artist: "Titãs",
     genre: "Rock Nacional",
     startSeconds: 40,
-    endSeconds: 53,
+    endSeconds: 54,
     alternativeTitles: ["Envelheço na Cidade", "Flores", "Pra Dizer Adeus"],
     alternativeArtists: ["Paralamas do Sucesso", "Barão Vermelho", "Ira!"],
     lyricsGap: {
@@ -69,32 +68,16 @@ const TRACKS_CATALOG = [
       alternativeWords: ["se pôr", "brilhar", "morrer"]
     }
   },
-  {
-    id: "rock_05",
-    videoId: "oQp2s5n0v3k", // Cazuza - Exagerado
-    title: "Exagerado",
-    artist: "Cazuza",
-    genre: "Rock Nacional",
-    startSeconds: 50,
-    endSeconds: 63,
-    alternativeTitles: ["Codinome Beija-Flor", "Ideologia", "O Tempo Não Pára"],
-    alternativeArtists: ["Frejat", "Lulu Santos", "Nando Reis"],
-    lyricsGap: {
-      verseSnippet: "Exagerado, jogado aos teus pés, eu sou mesmo ___",
-      correctWord: "exagerado",
-      alternativeWords: ["apaixonado", "desesperado", "alucinado"]
-    }
-  },
 
   // --- SERTANEJO ---
   {
     id: "sert_01",
-    videoId: "vI2j8H0_g90", // Marília Mendonça - Infiel
+    videoId: "eCyMh-mZ1B0", // Marília Mendonça - Infiel
     title: "Infiel",
     artist: "Marília Mendonça",
     genre: "Sertanejo",
-    startSeconds: 62,
-    endSeconds: 75,
+    startSeconds: 60,
+    endSeconds: 74,
     alternativeTitles: ["Eu Sei de Cor", "De Quem É a Culpa?", "Ciumeira"],
     alternativeArtists: ["Maiara & Maraisa", "Simone & Simaria", "Naiara Azevedo"],
     lyricsGap: {
@@ -105,7 +88,7 @@ const TRACKS_CATALOG = [
   },
   {
     id: "sert_02",
-    videoId: "1eO7tG_p2hM", // Jorge & Mateus - Amo Noite e Dia
+    videoId: "nSSceWPREBA", // Jorge & Mateus - Amo Noite e Dia
     title: "Amo Noite e Dia",
     artist: "Jorge & Mateus",
     genre: "Sertanejo",
@@ -121,23 +104,7 @@ const TRACKS_CATALOG = [
   },
   {
     id: "sert_03",
-    videoId: "9oT2fR_x9e8", // Henrique & Juliano - Cuida Bem Dela
-    title: "Cuida Bem Dela",
-    artist: "Henrique & Juliano",
-    genre: "Sertanejo",
-    startSeconds: 55,
-    endSeconds: 68,
-    alternativeTitles: ["Até Você Voltar", "Liberdade Provisória", "Vidinha de Balada"],
-    alternativeArtists: ["Gusttavo Lima", "Luan Santana", "Cristiano Araújo"],
-    lyricsGap: {
-      verseSnippet: "Cuida bem dela, você não vai conhecer alguém melhor que ___",
-      correctWord: "ela",
-      alternativeWords: ["você", "ninguém", "eu"]
-    }
-  },
-  {
-    id: "sert_04",
-    videoId: "Z_27qZ6L5qU", // Evidências - Chitãozinho & Xororó
+    videoId: "ePjtnSPFWK8", // Evidências - Chitãozinho & Xororó
     title: "Evidências",
     artist: "Chitãozinho & Xororó",
     genre: "Sertanejo",
@@ -155,12 +122,12 @@ const TRACKS_CATALOG = [
   // --- MPB & CLÁSSICOS ---
   {
     id: "mpb_01",
-    videoId: "3aBwY5uG8mI", // Tim Maia - Não Quero Dinheiro
+    videoId: "_HLsxDQ_98s", // Tim Maia - Não Quero Dinheiro
     title: "Não Quero Dinheiro (Só Quero Amar)",
     artist: "Tim Maia",
     genre: "MPB",
     startSeconds: 30,
-    endSeconds: 43,
+    endSeconds: 44,
     alternativeTitles: ["Gostava Tanto de Você", "Descobridor dos Sete Mares", "Azul da Cor do Mar"],
     alternativeArtists: ["Jorge Ben Jor", "Seu Jorge", "Djavan"],
     lyricsGap: {
@@ -171,12 +138,12 @@ const TRACKS_CATALOG = [
   },
   {
     id: "mpb_02",
-    videoId: "b6vW4hXqL9w", // Elis Regina - Como Nossos Pais
+    videoId: "LfCDkut_j9M", // Elis Regina - Como Nossos Pais
     title: "Como Nossos Pais",
     artist: "Elis Regina",
     genre: "MPB",
     startSeconds: 50,
-    endSeconds: 63,
+    endSeconds: 64,
     alternativeTitles: ["Águas de Março", "O Bêbado e a Equilibrista", "Fascinação"],
     alternativeArtists: ["Gal Costa", "Maria Bethânia", "Rita Lee"],
     lyricsGap: {
@@ -185,32 +152,16 @@ const TRACKS_CATALOG = [
       alternativeWords: ["irmãos", "antigos", "avós"]
     }
   },
-  {
-    id: "mpb_03",
-    videoId: "9m_W6b_jL3s", // Jorge Ben Jor - Mas Que Nada
-    title: "Mas Que Nada",
-    artist: "Jorge Ben Jor",
-    genre: "MPB",
-    startSeconds: 22,
-    endSeconds: 35,
-    alternativeTitles: ["Taj Mahal", "País Tropical", "Chove Chuva"],
-    alternativeArtists: ["Gilberto Gil", "Caetano Veloso", "Chico Buarque"],
-    lyricsGap: {
-      verseSnippet: "O samba tá animado, o que eu quero é ___",
-      correctWord: "sambar",
-      alternativeWords: ["dançar", "cantar", "pular"]
-    }
-  },
 
   // --- POP & FUNK BR ---
   {
     id: "pop_01",
-    videoId: "c5gH6tF2kL8", // Anitta - Show das Poderosas
+    videoId: "FGViL3CYRwg", // Anitta - Show das Poderosas
     title: "Show das Poderosas",
     artist: "Anitta",
     genre: "Funk / Pop",
     startSeconds: 20,
-    endSeconds: 33,
+    endSeconds: 34,
     alternativeTitles: ["Bang", "Envolver", "Paradinha"],
     alternativeArtists: ["Ludmilla", "Luísa Sonza", "Pabllo Vittar"],
     lyricsGap: {
@@ -221,12 +172,12 @@ const TRACKS_CATALOG = [
   },
   {
     id: "pop_02",
-    videoId: "8xL7yH1hK8o", // MC Kevinho - Olha a Explosão
+    videoId: "3yd_eoMOvqk", // MC Kevinho - Olha a Explosão
     title: "Olha a Explosão",
     artist: "MC Kevinho",
     genre: "Funk / Pop",
     startSeconds: 35,
-    endSeconds: 48,
+    endSeconds: 49,
     alternativeTitles: ["O Grave Bater", "Ta Tum Tum", "Agora É Tudo Meu"],
     alternativeArtists: ["MC Livinho", "MC Guimê", "MC Fioti"],
     lyricsGap: {
@@ -235,43 +186,11 @@ const TRACKS_CATALOG = [
       alternativeWords: ["mente", "pista", "regra"]
     }
   },
-  {
-    id: "pop_03",
-    videoId: "hQfXj_yZk8M", // Ludmilla - Maldivas
-    title: "Maldivas",
-    artist: "Ludmilla",
-    genre: "Funk / Pop",
-    startSeconds: 45,
-    endSeconds: 58,
-    alternativeTitles: ["Cheguei", "Verdinha", "Rainha da Favela"],
-    alternativeArtists: ["Gloria Groove", "Iza", "Pocah"],
-    lyricsGap: {
-      verseSnippet: "A minha de fé, a minha mulher, que me faz tão ___",
-      correctWord: "bem",
-      alternativeWords: ["feliz", "livre", "forte"]
-    }
-  },
 
   // --- TRAP & RAP NACIONAL ---
   {
     id: "rap_01",
-    videoId: "j8N2mP7qL5w", // Matuê - Anos Luz
-    title: "Anos Luz",
-    artist: "Matuê",
-    genre: "Trap / Rap",
-    startSeconds: 30,
-    endSeconds: 43,
-    alternativeTitles: ["Kenny G", "777-666", "Máquina do Tempo"],
-    alternativeArtists: ["Teto", "WIU", "Filipe Ret"],
-    lyricsGap: {
-      verseSnippet: "Baby, eu tô a anos luz daquele seu velho ___",
-      correctWord: "mundo",
-      alternativeWords: ["tempo", "amor", "sonho"]
-    }
-  },
-  {
-    id: "rap_02",
-    videoId: "k5W3mQ9zT2e", // Racionais MC's - Vida Loka Parte 2
+    videoId: "hNHlc7PoIdg", // Racionais MC's - Vida Loka Parte 2
     title: "Vida Loka (Parte 2)",
     artist: "Racionais MC's",
     genre: "Trap / Rap",
@@ -296,4 +215,3 @@ const MUSIC_GENRES = [
   "Funk / Pop",
   "Trap / Rap"
 ];
-
