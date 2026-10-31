@@ -75,10 +75,11 @@ class MultiplayerManager {
   /**
    * Cria uma sala como Anfitrião (Host)
    */
-  createRoom(mode, userProfile, genre = "Todos os Gêneros") {
+  createRoom(mode, userProfile, genre = "Todos os Gêneros", challengeType = "ALL") {
     this.isHost = true;
     this.gameMode = mode;
     this.selectedGenre = genre;
+    this.selectedChallengeType = challengeType;
     this.roomCode = "BR" + Math.floor(10 + Math.random() * 90);
     this.connections = {};
 
@@ -280,9 +281,13 @@ class MultiplayerManager {
 
     if (data.type === "START_GAME") {
       this.players = data.players;
+      this.selectedChallengeType = data.challengeType || "ALL";
+      this.gameMode = data.mode || this.gameMode;
+      this.selectedGenre = data.genre || this.selectedGenre;
       this.emit("game_started_by_host", {
         rounds: data.rounds,
-        players: data.players
+        players: data.players,
+        challengeType: data.challengeType
       });
     }
 
@@ -356,7 +361,10 @@ class MultiplayerManager {
       this.broadcast({
         type: "START_GAME",
         rounds: rounds,
-        players: this.players
+        players: this.players,
+        challengeType: this.selectedChallengeType,
+        mode: this.gameMode,
+        genre: this.selectedGenre
       });
     }
   }
