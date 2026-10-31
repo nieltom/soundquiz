@@ -18,7 +18,7 @@ class GameEngine {
     let availableTracks = TRACKS_CATALOG;
     if (genre !== "Todos os Gêneros") {
       const filtered = TRACKS_CATALOG.filter(t => t.genre === genre);
-      if (filtered.length >= totalRounds) {
+      if (filtered.length > 0) {
         availableTracks = filtered;
       }
     }
