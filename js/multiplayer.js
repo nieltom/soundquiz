@@ -1,8 +1,31 @@
 /**
  * Gerenciador Multiplayer em Tempo Real P2P (WebRTC via PeerJS)
- * Permite que jogadores em celulares ou computadores diferentes joguem na mesma sala
+ * Permite que jogadores em celulares (4G/Wi-Fi) ou computadores joguem na mesma sala
  * diretamente pelo GitHub Pages, sem necessidade de servidor pago!
  */
+
+// Servidores STUN e TURN (OpenRelay) para garantir conexão em 4G / CGNAT móvel
+const PEER_ICE_SERVERS = [
+  { urls: "stun:stun.l.google.com:19302" },
+  { urls: "stun:global.stun.twilio.com:3478" },
+  { urls: "stun:openrelay.metered.ca:80" },
+  {
+    urls: "turn:openrelay.metered.ca:80",
+    username: "openrelayproject",
+    credential: "openrelayproject"
+  },
+  {
+    urls: "turn:openrelay.metered.ca:443",
+    username: "openrelayproject",
+    credential: "openrelayproject"
+  },
+  {
+    urls: "turn:openrelay.metered.ca:443?transport=tcp",
+    username: "openrelayproject",
+    credential: "openrelayproject"
+  }
+];
+
 class MultiplayerManager {
   constructor() {
     this.peer = null;
@@ -10,9 +33,10 @@ class MultiplayerManager {
     this.hostConnection = null; // Conexão com o Host (quando é Convidado)
     this.isHost = true;
     this.isConnectedOnline = false;
-    this.roomCode = "BR" + Math.floor(10 + Math.random() * 90);
+    this.roomCode = "BR" + Math.floor(1000 + Math.random() * 9000);
     this.gameMode = "FFA_4P";
     this.selectedGenre = "Todos os Gêneros";
+    this.selectedChallengeType = "ALL";
     this.players = [];
     this.bossState = {
       name: "Mestre do Vinil",
@@ -51,10 +75,7 @@ class MultiplayerManager {
       this.peer = new Peer({
         debug: 1,
         config: {
-          iceServers: [
-            { urls: "stun:stun.l.google.com:19302" },
-            { urls: "stun:global.stun.twilio.com:3478" }
-          ]
+          iceServers: PEER_ICE_SERVERS
         }
       });
 
@@ -64,7 +85,7 @@ class MultiplayerManager {
       });
 
       this.peer.on("error", (err) => {
-        console.warn("PeerJS aviso:", err.type);
+        console.warn("PeerJS aviso:", err.type, err);
       });
     } catch (e) {
       console.warn("Erro ao iniciar PeerJS:", e);
@@ -80,7 +101,9 @@ class MultiplayerManager {
     this.gameMode = mode;
     this.selectedGenre = genre;
     this.selectedChallengeType = challengeType;
-    this.roomCode = "BR" + Math.floor(10 + Math.random() * 90);
+    if (!this.roomCode || this.roomCode.length !== 6) {
+      this.roomCode = "BR" + Math.floor(1000 + Math.random() * 9000);
+    }
     this.connections = {};
 
     this.players = [
@@ -94,7 +117,8 @@ class MultiplayerManager {
         hasAnswered: false,
         isFrozen: false,
         isHost: true,
-        isBot: false
+        isBot: false,
+        status: "ready"
       }
     ];
 
@@ -105,14 +129,21 @@ class MultiplayerManager {
     // Inicia listener de conexões no Host
     const peerId = `soundquiz-${this.roomCode.toLowerCase()}`;
     if (typeof Peer !== "undefined") {
-      if (this.peer) this.peer.destroy();
+      if (this.peer) {
+        try { this.peer.destroy(); } catch (e) {}
+        this.peer = null;
+      }
 
       this.peer = new Peer(peerId, {
+        debug: 1,
         config: {
-          iceServers: [
-            { urls: "stun:stun.l.google.com:19302" }
-          ]
+          iceServers: PEER_ICE_SERVERS
         }
+      });
+
+      this.peer.on("open", (id) => {
+        this.isConnectedOnline = true;
+        this.emit("room_ready", { roomCode: this.roomCode, players: this.players });
       });
 
       this.peer.on("connection", (conn) => {
@@ -120,10 +151,12 @@ class MultiplayerManager {
       });
 
       this.peer.on("error", (err) => {
+        console.warn("PeerJS host erro:", err.type, err);
         // Se o ID já existir, tenta outro código
         if (err.type === "unavailable-id") {
-          this.roomCode = "BR" + Math.floor(10 + Math.random() * 90);
-          this.createRoom(mode, userProfile, genre);
+          this.roomCode = "BR" + Math.floor(1000 + Math.random() * 9000);
+          this.emit("room_code_changed", { roomCode: this.roomCode });
+          this.createRoom(mode, userProfile, genre, challengeType);
         }
       });
     }
@@ -138,41 +171,109 @@ class MultiplayerManager {
   /**
    * Conecta a uma sala existente como Convidado
    */
-  joinRoom(code, userProfile, onJoined, onError) {
+  joinRoom(code, userProfile, onConnecting, onJoined, onError) {
     this.isHost = false;
-    this.roomCode = code.toUpperCase();
+    this.roomCode = code.toUpperCase().trim();
     const hostPeerId = `soundquiz-${this.roomCode.toLowerCase()}`;
 
-    this.initPeer(() => {
-      try {
-        const conn = this.peer.connect(hostPeerId, { reliable: true });
-        this.hostConnection = conn;
-
-        conn.on("open", () => {
-          // Envia dados do jogador para o Host
-          conn.send({
-            type: "GUEST_JOIN",
-            userProfile
-          });
-        });
-
-        conn.on("data", (data) => {
-          this.handleHostMessage(data);
-        });
-
-        conn.on("close", () => {
-          alert("A conexão com o anfitrião da sala foi encerrada.");
-        });
-
-        conn.on("error", (err) => {
-          if (onError) onError("Não foi possível conectar à sala " + this.roomCode);
-        });
-
-        if (onJoined) onJoined();
-      } catch (e) {
-        if (onError) onError("Erro ao conectar à sala.");
+    // Popula o próprio jogador localmente para que apareça imediatamente no lobby
+    this.players = [
+      {
+        id: "p_local_guest",
+        name: userProfile.username || "Jogador",
+        avatar: userProfile.avatar || "🎧",
+        team: "B",
+        score: 0,
+        streak: 0,
+        hasAnswered: false,
+        isFrozen: false,
+        isHost: false,
+        isBot: false,
+        status: "connecting"
       }
-    });
+    ];
+
+    if (onConnecting) onConnecting(this.roomCode, this.players);
+
+    let hasConnected = false;
+    let attempts = 0;
+    const maxAttempts = 3;
+
+    const tryConnect = () => {
+      attempts++;
+
+      this.initPeer(() => {
+        try {
+          if (!this.peer || this.peer.destroyed) {
+            if (onError) onError("Falha ao inicializar comunicação P2P.");
+            return;
+          }
+
+          // Listener de erro do PeerJS caso o anfitrião não exista ainda
+          const onPeerErr = (err) => {
+            if (err.type === "peer-unavailable" && !hasConnected) {
+              if (attempts < maxAttempts) {
+                console.log(`Tentativa ${attempts} falhou, tentando reconectar em 1s...`);
+                setTimeout(tryConnect, 1000);
+              } else {
+                if (onError) onError(`Não foi possível encontrar a sala ${this.roomCode}. Verifique se o código está correto e se o anfitrião já abriu a sala.`);
+              }
+            }
+          };
+          this.peer.once("error", onPeerErr);
+
+          const conn = this.peer.connect(hostPeerId, {
+            reliable: true
+          });
+          this.hostConnection = conn;
+
+          const connectionTimeout = setTimeout(() => {
+            if (!hasConnected) {
+              if (attempts < maxAttempts) {
+                console.log(`Timeout na tentativa ${attempts}, retentando...`);
+                tryConnect();
+              } else {
+                if (onError) onError(`Tempo limite esgotado ao conectar à sala ${this.roomCode}. Verifique a conexão e tente novamente.`);
+              }
+            }
+          }, 7000);
+
+          conn.on("open", () => {
+            hasConnected = true;
+            clearTimeout(connectionTimeout);
+
+            // Envia dados do jogador para o Host
+            conn.send({
+              type: "GUEST_JOIN",
+              userProfile: {
+                username: userProfile.username || "Jogador",
+                avatar: userProfile.avatar || "🎧"
+              }
+            });
+
+            if (onJoined) onJoined();
+          });
+
+          conn.on("data", (data) => {
+            this.handleHostMessage(data);
+          });
+
+          conn.on("close", () => {
+            alert("A conexão com a sala foi encerrada pelo anfitrião.");
+            this.emit("room_closed");
+          });
+
+          conn.on("error", (err) => {
+            console.warn("Erro no canal de dados:", err);
+          });
+        } catch (e) {
+          console.warn("Exception ao conectar:", e);
+          if (onError) onError("Erro ao conectar à sala.");
+        }
+      });
+    };
+
+    tryConnect();
   }
 
   /**
@@ -202,20 +303,34 @@ class MultiplayerManager {
           hasAnswered: false,
           isFrozen: false,
           isHost: false,
-          isBot: false
+          isBot: false,
+          status: "ready"
         };
 
-        this.players.push(newPlayer);
+        const existingIdx = this.players.findIndex(p => p.id === conn.peer);
+        if (existingIdx >= 0) {
+          this.players[existingIdx] = newPlayer;
+        } else {
+          this.players.push(newPlayer);
+        }
         this.connections[conn.peer] = conn;
 
-        // Notifica todos os jogadores da nova lista
-        this.broadcast({
+        const updatePayload = {
           type: "ROOM_UPDATE",
           players: this.players,
           mode: this.gameMode,
           genre: this.selectedGenre,
-          roomCode: this.roomCode
-        });
+          roomCode: this.roomCode,
+          challengeType: this.selectedChallengeType
+        };
+
+        // Responde diretamente para a nova conexão para sincronização imediata
+        if (conn.open) {
+          conn.send(updatePayload);
+        }
+
+        // Notifica todos os demais jogadores
+        this.broadcast(updatePayload);
 
         this.emit("room_update", { players: this.players });
       }
@@ -262,7 +377,9 @@ class MultiplayerManager {
         type: "ROOM_UPDATE",
         players: this.players,
         mode: this.gameMode,
-        genre: this.selectedGenre
+        genre: this.selectedGenre,
+        roomCode: this.roomCode,
+        challengeType: this.selectedChallengeType
       });
       this.emit("room_update", { players: this.players });
     });
@@ -274,8 +391,10 @@ class MultiplayerManager {
   handleHostMessage(data) {
     if (data.type === "ROOM_UPDATE") {
       this.players = data.players;
-      this.gameMode = data.mode;
-      this.roomCode = data.roomCode;
+      this.gameMode = data.mode || this.gameMode;
+      this.roomCode = data.roomCode || this.roomCode;
+      this.selectedGenre = data.genre || this.selectedGenre;
+      this.selectedChallengeType = data.challengeType || this.selectedChallengeType;
       this.emit("room_update", { players: this.players });
     }
 
@@ -287,7 +406,9 @@ class MultiplayerManager {
       this.emit("game_started_by_host", {
         rounds: data.rounds,
         players: data.players,
-        challengeType: data.challengeType
+        challengeType: data.challengeType,
+        mode: data.mode,
+        genre: data.genre
       });
     }
 
@@ -323,6 +444,32 @@ class MultiplayerManager {
   }
 
   /**
+   * Encerra a participação na sala com limpeza de rede
+   */
+  leaveRoom() {
+    try {
+      if (this.isHost) {
+        this.broadcast({ type: "ROOM_CLOSED" });
+        Object.values(this.connections).forEach(conn => {
+          try { conn.close(); } catch (e) {}
+        });
+        this.connections = {};
+      } else if (this.hostConnection) {
+        try { this.hostConnection.close(); } catch (e) {}
+        this.hostConnection = null;
+      }
+      if (this.peer) {
+        try { this.peer.destroy(); } catch (e) {}
+        this.peer = null;
+      }
+    } catch (e) {
+      console.warn("Erro ao sair da sala:", e);
+    }
+    this.players = [];
+    this.isConnectedOnline = false;
+  }
+
+  /**
    * Inicia a partida e sincroniza as rodadas com todos os jogadores
    */
   startMatchWithPlayers(rounds) {
@@ -352,7 +499,8 @@ class MultiplayerManager {
         hasAnswered: false,
         isFrozen: false,
         isHost: false,
-        isBot: true
+        isBot: true,
+        status: "ready"
       });
     }
 
