@@ -500,16 +500,26 @@ class SoundQuizApp {
     // Atualiza placar dos 4 jogadores
     this.renderPlayersBar();
 
-    // Inicia rotação do disco de vinil
+    // Inicia rotação do disco de vinil e capa oficial
     const vinyl = document.getElementById("vinyl-disc");
-    vinyl.classList.remove("paused");
+    if (vinyl) vinyl.classList.remove("paused");
+
+    const albumCover = document.getElementById("album-cover");
+    if (albumCover && challenge.track.artworkUrl) {
+      albumCover.src = challenge.track.artworkUrl;
+    }
+    const vinylArt = document.getElementById("vinyl-art");
+    if (vinylArt && challenge.track.artworkUrl) {
+      vinylArt.src = challenge.track.artworkUrl;
+    }
+
     document.getElementById("soundwave-status").textContent = "Tocando trecho musical...";
 
-    // Toca o trecho oficial do clipe do YouTube
+    // Toca o trecho oficial de estúdio 100% sem anúncios
     ytAudioPlayer.playSnippet(
-      challenge.track.videoId,
-      challenge.track.startSeconds,
-      challenge.track.endSeconds,
+      challenge.track.audioUrl,
+      0,
+      10,
       () => {
         document.getElementById("soundwave-status").textContent = "Tempo esgotando!";
       }
