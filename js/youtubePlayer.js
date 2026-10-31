@@ -97,6 +97,7 @@ class YouTubeAudioPlayer {
    */
   playSnippet(videoId, startSeconds, endSeconds, onFinish) {
     this.stop();
+    this.currentStartSeconds = startSeconds;
     this.currentEndSeconds = endSeconds;
     this.onFinishCallback = onFinish;
     this.currentVideoId = videoId;
@@ -164,6 +165,20 @@ class YouTubeAudioPlayer {
         this.player.setVolume(100);
         this.player.playVideo();
       } catch (e) {}
+    }
+  }
+
+  skipAd(targetSeconds) {
+    if (this.player && typeof this.player.seekTo === "function") {
+      try {
+        const sec = targetSeconds || this.currentStartSeconds || 30;
+        this.player.seekTo(sec, true);
+        this.player.unMute();
+        this.player.setVolume(100);
+        this.player.playVideo();
+      } catch (e) {
+        console.warn("Falha ao pular anúncio:", e);
+      }
     }
   }
 }
