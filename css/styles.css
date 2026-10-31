@@ -385,12 +385,12 @@ body {
   transition: width 0.3s ease;
 }
 
-/* Moldura do Player de Áudio do YouTube */
+/* Moldura do Player de Áudio Estilo SongPop (100% Sem Anúncios) */
 .media-visualizer-card {
   position: relative;
   width: 100%;
-  height: 160px;
-  background: #000;
+  height: 150px;
+  background: #0d0e15;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
   display: flex;
@@ -401,18 +401,7 @@ body {
   margin-bottom: 10px;
 }
 
-/* O iframe do YouTube fica visível e interativo para garantir reprodução em celulares */
-.yt-hidden-player {
-  width: 100%;
-  height: 100%;
-  opacity: 1;
-  pointer-events: auto;
-  border: none;
-}
-
 .vinyl-disc {
-  display: none; /* Deixa o clipe do YouTube em destaque */
-}
   width: 72px;
   height: 72px;
   border-radius: 50%;
@@ -421,8 +410,14 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 28px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+  animation: spinVinyl 3.5s linear infinite;
+  z-index: 2;
+}
+
+.vinyl-disc.paused {
+  animation-play-state: paused;
+}
   animation: spinVinyl 3.5s linear infinite;
   z-index: 2;
 }
