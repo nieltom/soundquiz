@@ -7,6 +7,8 @@ class SoundQuizApp {
     this.currentScreen = "screen-home";
     this.selectedMode = "FFA_4P";
     this.selectedGenre = "Todos os Gêneros";
+    this.selectedPlayType = "solo"; // "solo" ou "friends"
+    this.selectedChallengeType = "ALL"; // "ALL", "COMPLETE_LYRICS", "GUESS_ARTIST", "GUESS_TITLE"
     this.currentRounds = [];
     this.currentRoundIndex = 0;
     this.currentChallenge = null;
@@ -141,31 +143,80 @@ class SoundQuizApp {
   }
 
   bindEvents() {
-    // Seleção de Modo
+    // Seleção de Modo: ao clicar em qualquer modo, abre o modal de configuração de partida
     document.querySelectorAll(".mode-card").forEach(card => {
       card.addEventListener("click", () => {
         document.querySelectorAll(".mode-card").forEach(c => c.classList.remove("active"));
         card.classList.add("active");
         this.selectedMode = card.getAttribute("data-mode");
+        this.openMatchConfigModal(this.selectedMode);
       });
     });
 
     // Seleção de Gênero
     document.getElementById("select-genre").addEventListener("change", (e) => {
       this.selectedGenre = e.target.value;
+      const configSelect = document.getElementById("config-select-genre");
+      if (configSelect) configSelect.value = this.selectedGenre;
     });
 
     // Botões Principais da Home
     document.getElementById("btn-quick-play").addEventListener("click", () => {
-      this.startMatchDirectly();
+      this.openMatchConfigModal(this.selectedMode);
     });
 
     document.getElementById("btn-create-room").addEventListener("click", () => {
-      this.openLobbyRoom();
+      this.selectedPlayType = "friends";
+      this.openMatchConfigModal(this.selectedMode);
     });
 
     document.getElementById("btn-join-code").addEventListener("click", () => {
       this.openModal("modal-join-code");
+    });
+
+    // Modal de Configuração de Partida (1v1, 2v2, Co-op, FFA)
+    document.getElementById("btn-setup-solo").addEventListener("click", () => {
+      this.selectedPlayType = "solo";
+      document.getElementById("btn-setup-solo").classList.add("active");
+      document.getElementById("btn-setup-friends").classList.remove("active");
+    });
+
+    document.getElementById("btn-setup-friends").addEventListener("click", () => {
+      this.selectedPlayType = "friends";
+      document.getElementById("btn-setup-friends").classList.add("active");
+      document.getElementById("btn-setup-solo").classList.remove("active");
+    });
+
+    document.getElementById("config-select-genre").addEventListener("change", (e) => {
+      this.selectedGenre = e.target.value;
+      document.getElementById("select-genre").value = this.selectedGenre;
+    });
+
+    document.querySelectorAll(".challenge-option-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".challenge-option-btn").forEach(b => {
+          b.classList.remove("active");
+          const c = b.querySelector(".check-icon");
+          if (c) c.textContent = "";
+        });
+        btn.classList.add("active");
+        const check = btn.querySelector(".check-icon");
+        if (check) check.textContent = "✔";
+        this.selectedChallengeType = btn.getAttribute("data-challenge");
+      });
+    });
+
+    document.getElementById("btn-config-start").addEventListener("click", () => {
+      this.closeModal("modal-match-config");
+      if (this.selectedPlayType === "friends") {
+        this.openLobbyRoom();
+      } else {
+        this.startMatchDirectly();
+      }
+    });
+
+    document.getElementById("btn-close-config").addEventListener("click", () => {
+      this.closeModal("modal-match-config");
     });
 
     // Sala de Espera (Lobby)
@@ -459,9 +510,60 @@ class SoundQuizApp {
     alert("Perfil salvo com sucesso!");
   }
 
+  openMatchConfigModal(mode) {
+    this.selectedMode = mode || "FFA_4P";
+
+    const modeTitles = {
+      "DUEL_1V1": { title: "⚡ Duelo 1v1", badge: "1v1", desc: "Disputa rápida mano a mano" },
+      "DUO_2V2": { title: "🤝 Batalha 2v2", badge: "2v2", desc: "Disputa de duplas (Time A vs Time B)" },
+      "COOP_BOSS": { title: "👾 Co-op Boss", badge: "Co-op", desc: "Cooperativo: Derrotem juntos o Mestre do Vinil" },
+      "FFA_4P": { title: "👥 Todos vs Todos", badge: "4P FFA", desc: "Disputa de 4 jogadores simultâneos" }
+    };
+
+    const info = modeTitles[this.selectedMode] || modeTitles["FFA_4P"];
+    const titleEl = document.getElementById("config-mode-title");
+    const badgeEl = document.getElementById("config-mode-badge");
+    const descEl = document.getElementById("config-mode-desc");
+    if (titleEl) titleEl.textContent = info.title;
+    if (badgeEl) badgeEl.textContent = info.badge;
+    if (descEl) descEl.textContent = info.desc;
+
+    // Atualiza botões solo vs friends
+    const btnSolo = document.getElementById("btn-setup-solo");
+    const btnFriends = document.getElementById("btn-setup-friends");
+    if (btnSolo && btnFriends) {
+      if (this.selectedPlayType === "friends") {
+        btnSolo.classList.remove("active");
+        btnFriends.classList.add("active");
+      } else {
+        btnSolo.classList.add("active");
+        btnFriends.classList.remove("active");
+      }
+    }
+
+    // Sincroniza gênero no select do modal
+    const genreSelect = document.getElementById("config-select-genre");
+    if (genreSelect) genreSelect.value = this.selectedGenre;
+
+    // Sincroniza botões de desafio
+    document.querySelectorAll(".challenge-option-btn").forEach(btn => {
+      const ch = btn.getAttribute("data-challenge");
+      const checkIcon = btn.querySelector(".check-icon");
+      if (ch === this.selectedChallengeType) {
+        btn.classList.add("active");
+        if (checkIcon) checkIcon.textContent = "✔";
+      } else {
+        btn.classList.remove("active");
+        if (checkIcon) checkIcon.textContent = "";
+      }
+    });
+
+    this.openModal("modal-match-config");
+  }
+
   openLobbyRoom() {
     const profile = gameEngine.getProfile();
-    const roomData = multiplayerManager.createRoom(this.selectedMode, profile, this.selectedGenre);
+    const roomData = multiplayerManager.createRoom(this.selectedMode, profile, this.selectedGenre, this.selectedChallengeType);
 
     document.getElementById("room-code-display").textContent = roomData.roomCode;
     document.getElementById("btn-start-game").style.display = "flex";
@@ -496,15 +598,15 @@ class SoundQuizApp {
 
   startMatchDirectly() {
     const profile = gameEngine.getProfile();
-    this.currentRounds = gameEngine.generateRounds(this.selectedGenre, 7);
-    multiplayerManager.createRoom(this.selectedMode, profile, this.selectedGenre);
+    this.currentRounds = gameEngine.generateRounds(this.selectedGenre, 7, this.selectedChallengeType);
+    multiplayerManager.createRoom(this.selectedMode, profile, this.selectedGenre, this.selectedChallengeType);
     multiplayerManager.startMatchWithPlayers(this.currentRounds);
     this.startGameplay();
   }
 
   startGameplay() {
     if (!this.currentRounds || this.currentRounds.length === 0) {
-      this.currentRounds = gameEngine.generateRounds(this.selectedGenre, 7);
+      this.currentRounds = gameEngine.generateRounds(this.selectedGenre, 7, this.selectedChallengeType);
     }
     this.currentRoundIndex = 0;
     this.userScore = 0;
@@ -544,8 +646,48 @@ class SoundQuizApp {
     const bonusPill = document.getElementById("game-bonus-pill");
     bonusPill.style.display = challenge.isBonusRound ? "block" : "none";
 
-    // Atualiza o texto da pergunta
-    document.getElementById("game-question-text").textContent = challenge.questionText;
+    // Atualiza badge e texto da pergunta
+    const badge = document.getElementById("game-challenge-badge");
+    const questionEl = document.getElementById("game-question-text");
+
+    let snippetDuration = 10;
+    let snippetStart = 0;
+
+    if (challenge.challengeType === "COMPLETE_LYRICS") {
+      if (badge) {
+        badge.textContent = "📝 COMPLETE A MÚSICA";
+        badge.style.color = "var(--accent-cyan)";
+        badge.style.borderColor = "rgba(6, 182, 212, 0.4)";
+        badge.style.background = "rgba(6, 182, 212, 0.15)";
+      }
+      questionEl.innerHTML = `<span style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 4px;">Ouça e complete o verso da música:</span><span style="color: #fff; font-size: 17px; font-weight: 800; font-style: italic;">"${challenge.questionText}"</span>`;
+      document.getElementById("soundwave-status").textContent = "🎵 Tocando verso da música...";
+
+      snippetStart = challenge.startSeconds || 0;
+      snippetDuration = challenge.cutSeconds || 5.5;
+    } else if (challenge.challengeType === "GUESS_ARTIST") {
+      if (badge) {
+        badge.textContent = "🎤 QUEM CANTA?";
+        badge.style.color = "var(--accent-purple-light)";
+        badge.style.borderColor = "rgba(167, 139, 250, 0.4)";
+        badge.style.background = "rgba(124, 58, 237, 0.15)";
+      }
+      questionEl.textContent = "Quem canta este sucesso?";
+      document.getElementById("soundwave-status").textContent = "Tocando trecho musical...";
+      snippetStart = 0;
+      snippetDuration = 10;
+    } else {
+      if (badge) {
+        badge.textContent = "🎵 QUAL É A MÚSICA?";
+        badge.style.color = "var(--accent-gold)";
+        badge.style.borderColor = "rgba(245, 158, 11, 0.4)";
+        badge.style.background = "rgba(245, 158, 11, 0.15)";
+      }
+      questionEl.textContent = "Qual é o nome desta música?";
+      document.getElementById("soundwave-status").textContent = "Tocando trecho musical...";
+      snippetStart = 0;
+      snippetDuration = 10;
+    }
 
     // Atualiza opções nos botões
     const optionButtons = document.querySelectorAll(".option-btn");
@@ -561,7 +703,7 @@ class SoundQuizApp {
       }
     });
 
-    // Atualiza placar dos 4 jogadores
+    // Atualiza placar dos jogadores
     this.renderPlayersBar();
 
     // Inicia rotação do disco de vinil e capa oficial
@@ -577,15 +719,19 @@ class SoundQuizApp {
       vinylArt.src = challenge.track.artworkUrl;
     }
 
-    document.getElementById("soundwave-status").textContent = "Tocando trecho musical...";
-
-    // Toca o trecho oficial de estúdio 100% sem anúncios
+    // Toca o trecho de estúdio 100% sem anúncios
     ytAudioPlayer.playSnippet(
       challenge.track.audioUrl,
-      0,
-      10,
+      snippetStart,
+      snippetDuration,
       () => {
-        document.getElementById("soundwave-status").textContent = "Tempo esgotando!";
+        // Pausa no ponto exato do verso!
+        if (challenge.challengeType === "COMPLETE_LYRICS") {
+          document.getElementById("soundwave-status").textContent = "⏸️ Áudio pausou! Complete a letra:";
+          if (vinyl) vinyl.classList.add("paused");
+        } else {
+          document.getElementById("soundwave-status").textContent = "Tempo esgotando!";
+        }
       }
     );
 
@@ -660,6 +806,12 @@ class SoundQuizApp {
       clickedBtn.classList.add("correct");
       this.playSound("correct");
 
+      // Se for COMPLETE_LYRICS, retoma o áudio para tocar o restante do verso!
+      if (this.currentChallenge.challengeType === "COMPLETE_LYRICS") {
+        document.getElementById("soundwave-status").textContent = `✨ Correto: "${this.currentChallenge.correctText}"`;
+        ytAudioPlayer.resume(2.5);
+      }
+
       // Causa dano no Boss
       if (this.selectedMode === "COOP_BOSS") {
         multiplayerManager.damageBoss(Math.floor(points * 1.2));
@@ -681,6 +833,11 @@ class SoundQuizApp {
           optionButtons[idx].classList.add("correct");
         }
       });
+
+      if (this.currentChallenge.challengeType === "COMPLETE_LYRICS") {
+        document.getElementById("soundwave-status").textContent = `A palavra certa era: "${this.currentChallenge.correctText}"`;
+        ytAudioPlayer.resume(2.5);
+      }
     }
 
     this.renderPlayersBar();
@@ -689,7 +846,7 @@ class SoundQuizApp {
   onRoundTimeout() {
     ytAudioPlayer.stop();
     const vinyl = document.getElementById("vinyl-disc");
-    vinyl.classList.add("paused");
+    if (vinyl) vinyl.classList.add("paused");
 
     // Revela a alternativa correta se o usuário não respondeu
     const optionButtons = document.querySelectorAll(".option-btn");
@@ -712,10 +869,26 @@ class SoundQuizApp {
 
   renderPlayersBar() {
     const bar = document.getElementById("game-players-bar");
+    if (!bar) return;
     bar.innerHTML = "";
 
     multiplayerManager.players.forEach(p => {
       const slot = document.createElement("div");
+      slot.className = `player-slot ${p.hasAnswered ? "answered" : ""} ${p.isFrozen ? "frozen" : ""}`;
+      const teamBadge = (this.selectedMode === "DUO_2V2" && p.team)
+        ? `<span style="font-size: 9px; padding: 1px 4px; border-radius: 4px; background: ${p.team === "A" ? "var(--accent-cyan)" : "var(--accent-red)"}; color: #000; font-weight: 800; margin-left: 2px;">T${p.team}</span>`
+        : "";
+
+      slot.innerHTML = `
+        <div class="avatar-wrapper">
+          <span>${p.avatar}</span>
+        </div>
+        <div class="name">${p.name} ${teamBadge}</div>
+        <div class="score">${p.score}</div>
+      `;
+      bar.appendChild(slot);
+    });
+  }
       slot.className = `player-slot ${p.hasAnswered ? "answered" : ""} ${p.isFrozen ? "frozen" : ""}`;
       slot.innerHTML = `
         <div class="avatar-wrapper">
