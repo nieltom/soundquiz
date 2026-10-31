@@ -324,15 +324,6 @@ class SoundQuizApp {
       });
     }
 
-    document.getElementById("btn-confirm-join").addEventListener("click", () => {
-      const code = document.getElementById("input-room-code").value.trim().toUpperCase();
-      if (code) {
-        multiplayerManager.roomCode = code;
-        this.closeModal("modal-join-code");
-        this.openLobbyRoom();
-      }
-    });
-
     // Alternar Alto Contraste
     const contrastBtn = document.getElementById("btn-toggle-contrast");
     const contrastCheck = document.getElementById("check-high-contrast");
@@ -1047,8 +1038,17 @@ class SoundQuizApp {
   }
 }
 
-// Inicializa a aplicação ao carregar o DOM
-window.addEventListener("DOMContentLoaded", () => {
-  window.app = new SoundQuizApp();
-});
+// Inicializa a aplicação com segurança para qualquer estado de carregamento do DOM
+function initSoundQuizApp() {
+  if (!window.soundQuizAppInstance) {
+    window.soundQuizAppInstance = new SoundQuizApp();
+    window.app = window.soundQuizAppInstance;
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initSoundQuizApp);
+} else {
+  initSoundQuizApp();
+}
 
