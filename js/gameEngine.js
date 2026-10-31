@@ -13,7 +13,7 @@ class GameEngine {
   /**
    * Gera as rodadas da partida de forma 100% aleatória e dinâmica
    */
-  generateRounds(genre = "Todos os Gêneros", totalRounds = 7) {
+  generateRounds(genre = "Todos os Gêneros", totalRounds = 7, challengeMode = "ALL") {
     // 1. Filtrar músicas pelo gênero selecionado
     let availableTracks = TRACKS_CATALOG;
     if (genre !== "Todos os Gêneros") {
@@ -30,6 +30,11 @@ class GameEngine {
       [pool[i], pool[j]] = [pool[j], pool[i]];
     }
 
+    // Se o modo for COMPLETE_LYRICS, garante que faixas com lyricsGap estejam presentes
+    if (challengeMode === "COMPLETE_LYRICS") {
+      pool.sort((a, b) => (b.lyricsGap ? 1 : 0) - (a.lyricsGap ? 1 : 0));
+    }
+
     // 3. Seleciona as faixas não repetidas para a partida
     const selectedTracks = pool.slice(0, Math.min(totalRounds, pool.length));
 
@@ -37,11 +42,13 @@ class GameEngine {
     const challengeTypes = ["GUESS_TITLE", "GUESS_ARTIST", "COMPLETE_LYRICS"];
 
     return selectedTracks.map((track, index) => {
-      // Sorteia aleatoriamente o tipo de desafio da rodada
-      const randomChallengeType = challengeTypes[Math.floor(Math.random() * challengeTypes.length)];
-      const isBonusRound = (index === totalRounds - 1);
+      let chosenType = challengeMode;
+      if (!challengeMode || challengeMode === "ALL") {
+        chosenType = challengeTypes[Math.floor(Math.random() * challengeTypes.length)];
+      }
 
-      return this.buildChallenge(track, randomChallengeType, index + 1, isBonusRound);
+      const isBonusRound = (index === totalRounds - 1);
+      return this.buildChallenge(track, chosenType, index + 1, isBonusRound);
     });
   }
 
@@ -52,6 +59,8 @@ class GameEngine {
     let questionText = "";
     let correctText = "";
     let options = [];
+    let startSeconds = 0;
+    let cutSeconds = 10;
 
     if (challengeType === "GUESS_TITLE") {
       questionText = "Qual é o nome desta música?";
@@ -60,6 +69,8 @@ class GameEngine {
       const shuffledOthers = [...otherTracks].sort(() => Math.random() - 0.5);
       const wrong = shuffledOthers.slice(0, 3).map(t => t.title);
       options = [correctText, ...wrong].sort(() => Math.random() - 0.5);
+      startSeconds = 0;
+      cutSeconds = 10;
     } else if (challengeType === "GUESS_ARTIST") {
       questionText = "Quem canta este sucesso?";
       correctText = track.artist;
@@ -67,12 +78,28 @@ class GameEngine {
       const shuffledArtists = otherArtists.sort(() => Math.random() - 0.5);
       const wrong = shuffledArtists.slice(0, 3);
       options = [correctText, ...wrong].sort(() => Math.random() - 0.5);
+      startSeconds = 0;
+      cutSeconds = 10;
     } else {
-      // COMPLETE_LYRICS
-      questionText = track.lyricsGap ? track.lyricsGap.verseSnippet : "Complete a letra:";
-      correctText = track.lyricsGap ? track.lyricsGap.correctWord : "sucesso";
-      const wrong = track.lyricsGap ? track.lyricsGap.alternativeWords : ["amor", "coração", "vida"];
+      // COMPLETE_LYRICS: Trecho exato da mensagem tocado até pausar antes da palavra final
+      challengeType = "COMPLETE_LYRICS";
+      const gap = track.lyricsGap || {
+        verseSnippet: "Quem sabe ainda sou uma...",
+        correctWord: "garotinha",
+        alternativeWords: ["menina", "mulher", "criança"],
+        startSeconds: 0,
+        cutSeconds: 5.4
+      };
+
+      questionText = gap.verseSnippet;
+      correctText = gap.correctWord;
+      const wrong = (gap.alternativeWords && gap.alternativeWords.length >= 3)
+        ? gap.alternativeWords
+        : ["amor", "coração", "vida"];
+
       options = [correctText, ...wrong].sort(() => Math.random() - 0.5);
+      startSeconds = (gap.startSeconds !== undefined) ? gap.startSeconds : 0;
+      cutSeconds = gap.cutSeconds || 5.5;
     }
 
     return {
@@ -82,6 +109,8 @@ class GameEngine {
       questionText,
       track,
       correctText,
+      startSeconds,
+      cutSeconds,
       options: options.map((text, i) => ({
         id: `opt_${i}`,
         text,
